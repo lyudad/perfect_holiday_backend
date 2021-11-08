@@ -34,12 +34,9 @@ export class AuthController {
 
     response.cookie('jwt', jwt, { httpOnly: true });
 
-    return {
-      code: 200,
-      status: 'success',
-      message: 'User was logined',
-    };
+    return jwt;
   }
+
   @Post('logout')
   async logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('jwt');

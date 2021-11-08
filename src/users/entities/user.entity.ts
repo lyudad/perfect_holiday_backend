@@ -26,7 +26,7 @@ export class Users {
   @Column({ length: 20 })
   last_name: string;
 
-  @Column()
+  @Column({ default: false })
   is_block: boolean;
 
   @Column({ default: 14 })

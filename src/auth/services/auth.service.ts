@@ -9,7 +9,7 @@ export class AuthService {
     @InjectRepository(Users) private readonly userRepository: Repository<Users>,
   ) {}
 
-  async findOne(condition: any): Promise<Users> {
+  async findOne(condition): Promise<Users> {
     return this.userRepository.findOne(condition);
   }
 }
