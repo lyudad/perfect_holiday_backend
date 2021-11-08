@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Users } from 'src/users/entities/user.entity';
+import { findOneDto } from '../auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -9,7 +10,7 @@ export class AuthService {
     @InjectRepository(Users) private readonly userRepository: Repository<Users>,
   ) {}
 
-  async findOne(condition): Promise<Users> {
-    return this.userRepository.findOne(condition);
+  async findOne(authDto: findOneDto): Promise<Users> {
+    return this.userRepository.findOne(authDto);
   }
 }

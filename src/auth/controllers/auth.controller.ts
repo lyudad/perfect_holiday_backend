@@ -9,6 +9,7 @@ import { AuthService } from '../services/auth.service';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
+import { findOneDto } from '../auth.dto';
 
 @Controller('auth')
 export class AuthController {
