@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Header,
+  HttpCode,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
 import { Users } from 'src/entity/Users.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UsersService } from '../services/users.service';
@@ -27,6 +35,8 @@ export class UsersController {
 
   //   POST /users  добавляем нового User
   @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @Header('Cache-Control', 'none')
   create(@Body() createUserDto: CreateUserDto): Promise<Users> {
     return this.usersService.create(createUserDto);
   }

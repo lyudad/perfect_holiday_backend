@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Roles } from 'src/constants/constans';
 import { Users } from 'src/entity/Users.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -18,27 +19,18 @@ export class UsersService {
 
   //  НАХОДИТ ТОЛЬКО ВСЕХ EMPLOYEES
   async findEmployees(): Promise<Users[]> {
-    return this.usersRepository.find({ where: { role: 'employee' } });
+    return this.usersRepository.find({ where: { role: Roles.EMPLOYEE } });
   }
 
   // НАХОДИТ ВСЕХ ADMINS И EMPLOYEES
   async findAdminsAndEmployees(): Promise<Users[]> {
     return this.usersRepository.find({
-      where: [{ role: 'admin' }, { role: 'employee' }],
+      where: [{ role: Roles.ADMIN }, { role: Roles.EMPLOYEE }],
     });
   }
 
-  // СОЗДАЕТ НОВОГО USER (У КОГО БУДЕТ ЭТА ТАСКА ДОДЕЛАЕТЕ, АВТОМАТОМ НЕМНОГО ПРИХВАТИЛ ПО НУЖДЕ)
-  create(createUserDto: CreateUserDto): Promise<Users> {
-    const user = new Users();
-    user.role = createUserDto.role;
-    user.email = createUserDto.email;
-    user.password = createUserDto.password;
-    user.first_name = createUserDto.first_name;
-    user.last_name = createUserDto.last_name;
-    user.is_block = createUserDto.is_block;
-    user.available_vacation = createUserDto.available_vacation;
-    user.available_sick_days = createUserDto.available_sick_days;
-    return this.usersRepository.save(user);
+  // СОЗДАЕТ НОВОГО USER
+  async create(createUserDto: CreateUserDto): Promise<Users> {
+    return this.usersRepository.save(createUserDto);
   }
 }
