@@ -5,10 +5,14 @@ import {
   Header,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
+  Put,
 } from '@nestjs/common';
 import { Users } from 'src/entity/Users.entity';
+import { UpdateResult } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { UsersService } from '../services/users.service';
 
 @Controller('users')
@@ -39,5 +43,14 @@ export class UsersController {
   @Header('Cache-Control', 'none')
   create(@Body() createUserDto: CreateUserDto): Promise<Users> {
     return this.usersService.create(createUserDto);
+  }
+
+  //   PUT /users   обновляем email, first_name, last_name у user
+  @Put(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<UpdateResult> {
+    return this.usersService.update(id, updateUserDto);
   }
 }
