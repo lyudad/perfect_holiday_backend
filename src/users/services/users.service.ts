@@ -34,11 +34,6 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<Users> {
     return this.usersRepository.save(createUserDto);
   }
-  // async create(data: CreateUserDto) {
-  //   const user = this.usersRepository.create(data);
-  //   await this.usersRepository.save(data);
-  //   return user;
-  // }
 
   // ОБНОВЛЯЕТ email, first_name, last_name у user
   async update(
