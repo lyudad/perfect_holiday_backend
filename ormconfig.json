@@ -4,7 +4,7 @@
     "port": 3306,
     "username": "root",
     "password": "MyR@@t2021",
-    "database": "test",
-    "entities": [],
+    "database": "holidaydb",
+    "autoLoadEntities": true,
     "synchronize": true
 }
