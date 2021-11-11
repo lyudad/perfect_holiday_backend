@@ -6,7 +6,9 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Users } from 'src/entity/Users.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UsersService } from '../services/users.service';
@@ -16,18 +18,21 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   //   GET /users   получаем всех USERS
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll(): Promise<Users[]> {
     return this.usersService.findAll();
   }
 
   //   GET /users/employee   получаем всех Employees
+  @UseGuards(JwtAuthGuard)
   @Get('/employee')
   findEmployees(): Promise<Users[]> {
     return this.usersService.findEmployees();
   }
 
   //   GET /users/admin-employee   получаем всех Admins и Employees
+  @UseGuards(JwtAuthGuard)
   @Get('/admin-employee')
   findAdminsAndEmployees(): Promise<Users[]> {
     return this.usersService.findAdminsAndEmployees();

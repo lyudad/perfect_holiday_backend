@@ -9,7 +9,6 @@ import { AuthService } from '../services/auth.service';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
-import { findOneDto } from '../auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -31,7 +30,11 @@ export class AuthController {
     if (await bcrypt.compare(password, user.password)) {
       throw new BadRequestException('invalid credentials');
     }
-    const jwt = await this.jwtService.signAsync({ id: user.id });
+    const jwt = await this.jwtService.signAsync({
+      id: user.id,
+      email: user.email,
+      roles: user.role,
+    });
 
     response.cookie('jwt', jwt, { httpOnly: true });
 

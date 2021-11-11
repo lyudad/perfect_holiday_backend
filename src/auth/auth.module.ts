@@ -20,6 +20,6 @@ import { Users } from 'src/users/entities/user.entity';
       },
     }),
   ],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}
