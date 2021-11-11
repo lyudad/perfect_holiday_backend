@@ -13,6 +13,7 @@ import { Users } from 'src/entity/Users.entity';
 import { UpdateResult } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { UpdateIsBlockDto } from '../dto/update-isblock.dto';
 import { UsersService } from '../services/users.service';
 
 @Controller('users')
@@ -52,5 +53,14 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
     return this.usersService.update(id, updateUserDto);
+ }
+  
+  //   PUT /users   обновляем is_block у user
+  @Put(':id')
+  updateIsBlock(
+    @Param('id') id: string,
+    @Body() updateIsBlockDto: UpdateIsBlockDto,
+  ): Promise<UpdateResult> {
+    return this.usersService.updateIsBlock(id, updateIsBlockDto);
   }
 }

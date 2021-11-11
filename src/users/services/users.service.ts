@@ -5,6 +5,7 @@ import { Users } from 'src/entity/Users.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { UpdateIsBlockDto } from '../dto/update-isblock.dto';
 
 @Injectable()
 export class UsersService {
@@ -41,5 +42,13 @@ export class UsersService {
     updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
     return this.usersRepository.update(id, updateUserDto);
+  }
+  
+  // ОБНОВЛЯЕТ is_block у user
+  async updateIsBlock(
+    id: string,
+    updateIsBlockDto: UpdateIsBlockDto,
+  ): Promise<UpdateResult> {
+    return this.usersRepository.update(id, updateIsBlockDto);
   }
 }
