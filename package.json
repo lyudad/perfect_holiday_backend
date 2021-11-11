@@ -32,6 +32,7 @@
     "@nestjs/typeorm": "^8.0.2",
     "bcryptjs": "^2.4.3",
     "dcrypt": "0.0.2",
+    "express": "^4.17.1",
     "mysql2": "^2.3.2",
     "passport": "^0.5.0",
     "passport-jwt": "^4.0.0",
