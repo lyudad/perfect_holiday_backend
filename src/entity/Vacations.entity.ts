@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Users } from 'src/users/entities/user.entity';
+import { Users } from './Users.entity';
 
 export type VacationType = 'vacation' | 'sick';
 export type StatusVacationType = 'approved' | 'pending';

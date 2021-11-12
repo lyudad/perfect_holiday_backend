@@ -1,37 +1,42 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+import * as crypto from 'crypto';
 
 export type UserRoleType = 'employee' | 'admin' | 'super';
 
 @Entity('users')
 export class Users {
   @PrimaryGeneratedColumn()
-  id: number;
+  public id: number;
 
   @Column({
     type: 'enum',
     enum: ['employee', 'admin', 'super'],
     default: 'employee',
   })
-  role: UserRoleType;
+  public role: UserRoleType;
 
   @Column({ unique: true })
-  email: string;
+  public email: string;
 
+  @BeforeInsert()
+  hashPassword() {
+    this.password = crypto.createHmac('sha256', this.password).digest('hex');
+  }
   @Column({ length: 40 })
-  password: string;
+  public password: string;
 
   @Column({ length: 20 })
-  first_name: string;
+  public first_name: string;
 
   @Column({ length: 20 })
-  last_name: string;
+  public last_name: string;
 
-  @Column()
+  @Column({ default: false })
   is_block: boolean;
 
   @Column({ default: 14 })
-  available_vacation: number;
+  public available_vacation: number;
 
   @Column({ default: 5 })
-  available_sick_days: number;
+  public available_sick_days: number;
 }

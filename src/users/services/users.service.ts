@@ -55,7 +55,7 @@ export class UsersService {
   ): Promise<UpdateResult> {
     return this.usersRepository.update(id, updateUserDto);
   }
-  
+
   // ОБНОВЛЯЕТ is_block у user
   async updateIsBlock(
     id: string,
