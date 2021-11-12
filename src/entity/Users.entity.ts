@@ -31,7 +31,7 @@ export class Users {
   @Column({ length: 20 })
   public last_name: string;
 
-  @Column({ width: 1 })
+  @Column({ default: false })
   is_block: boolean;
 
   @Column({ default: 14 })
