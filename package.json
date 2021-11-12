@@ -36,6 +36,7 @@
     "class-validator": "^0.13.1",
     "crypto": "^1.0.1",
     "dcrypt": "0.0.2",
+    "express": "^4.17.1",
     "mysql2": "^2.3.2",
     "passport": "^0.5.0",
     "passport-jwt": "^4.0.0",

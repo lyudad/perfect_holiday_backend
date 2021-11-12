@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { findOneDto } from 'src/auth/auth.dto';
 import { Roles } from 'src/constants/constans';
 import { Users } from 'src/entity/Users.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { UpdateIsBlockDto } from '../dto/update-isblock.dto';
 
 @Injectable()
 export class UsersService {
@@ -12,6 +14,17 @@ export class UsersService {
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
   ) {}
+
+  async getUserByEmail(email: string): Promise<Users> {
+    const user = await this.usersRepository.findOne({
+      email,
+    });
+    return user;
+  }
+
+  async findOne(authDto: findOneDto): Promise<Users> {
+    return this.usersRepository.findOne(authDto);
+  }
 
   //  НАХОДИТ ВСЕХ USERS
   async findAll(): Promise<Users[]> {
@@ -41,5 +54,13 @@ export class UsersService {
     updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
     return this.usersRepository.update(id, updateUserDto);
+  }
+
+  // ОБНОВЛЯЕТ is_block у user
+  async updateIsBlock(
+    id: string,
+    updateIsBlockDto: UpdateIsBlockDto,
+  ): Promise<UpdateResult> {
+    return this.usersRepository.update(id, updateIsBlockDto);
   }
 }
