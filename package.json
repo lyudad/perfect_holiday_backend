@@ -21,6 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@anchan828/typeorm-transformers": "^0.7.12",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^1.1.0",
     "@nestjs/core": "^8.0.0",
@@ -31,7 +32,11 @@
     "@nestjs/swagger": "^5.1.4",
     "@nestjs/typeorm": "^8.0.2",
     "bcryptjs": "^2.4.3",
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
+    "crypto": "^1.0.1",
     "dcrypt": "0.0.2",
+    "express": "^4.17.1",
     "mysql2": "^2.3.2",
     "passport": "^0.5.0",
     "passport-jwt": "^4.0.0",

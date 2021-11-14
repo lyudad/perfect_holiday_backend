@@ -1,41 +1,18 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Post,
-  Res,
-} from '@nestjs/common';
+import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
-import * as bcrypt from 'bcryptjs';
-import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
-import { findOneDto } from '../auth.dto';
+import { Request, Response } from 'express';
+
+import { Users } from 'src/entity/Users.entity';
+import { LocalAuthGuard } from '../strategies/guards/local-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
-  @Post('login')
-  async login(
-    @Body('email') email: string,
-    @Body('password') password: string,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const user = await this.authService.findOne({ email });
-    if (!user) {
-      throw new BadRequestException('invalid credentials');
-    }
-    if (await bcrypt.compare(password, user.password)) {
-      throw new BadRequestException('invalid credentials');
-    }
-    const jwt = await this.jwtService.signAsync({ id: user.id });
-
-    response.cookie('jwt', jwt, { httpOnly: true });
-
-    return jwt;
+  @UseGuards(LocalAuthGuard)
+  @Post('/login')
+  async login(@Req() req: Request): Promise<{ access_token: string }> {
+    return this.authService.login(req.user as Users);
   }
 
   @Post('logout')
