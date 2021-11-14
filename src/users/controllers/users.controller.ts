@@ -5,6 +5,7 @@ import {
   Header,
   HttpCode,
   HttpStatus,
+  Delete,
   Param,
   Post,
   UseGuards,
@@ -20,7 +21,8 @@ import { UsersService } from '../services/users.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {
+  }
 
   //   GET /users   получаем всех USERS
   @UseGuards(JwtAuthGuard)
@@ -68,4 +70,11 @@ export class UsersController {
   ): Promise<UpdateResult> {
     return this.usersService.updateIsBlock(id, updateIsBlockDto);
   }
+  
+  
+   @Delete(':id')
+  deleteAction(@Param('id') id: string): Promise<void> {
+    return this.usersService.remove(id);
+  }
 }
+

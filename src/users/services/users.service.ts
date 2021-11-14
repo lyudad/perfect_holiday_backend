@@ -13,7 +13,8 @@ export class UsersService {
   constructor(
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
-  ) {}
+  ) {
+  }
 
   async getUserByEmail(email: string): Promise<Users> {
     const user = await this.usersRepository.findOne({
@@ -63,4 +64,9 @@ export class UsersService {
   ): Promise<UpdateResult> {
     return this.usersRepository.update(id, updateIsBlockDto);
   }
-}
+  
+    // УДАЛЯЕТ НОВОГО USER
+  async remove(id: string): Promise<void> {
+    await this.usersRepository.delete(id);
+  }
+
