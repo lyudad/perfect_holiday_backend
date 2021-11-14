@@ -10,7 +10,8 @@ export class UsersService {
   constructor(
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
-  ) {}
+  ) {
+  }
 
   //  НАХОДИТ ВСЕХ USERS
   async findAll(): Promise<Users[]> {
@@ -32,7 +33,9 @@ export class UsersService {
   // СОЗДАЕТ НОВОГО USER
   async create(createUserDto: CreateUserDto): Promise<Users> {
     return this.usersRepository.save(createUserDto);
- async remove(id:string):Promise<void>{
+  }
+
+  // УДАЛЯЕТ НОВОГО USER
+  async remove(id: string): Promise<void> {
     await this.usersRepository.delete(id);
   }
-}
