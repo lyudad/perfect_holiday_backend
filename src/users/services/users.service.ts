@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { findOneDto } from 'src/auth/auth.dto';
+import { AuthDto } from 'src/auth/auth.dto';
 import { Roles } from 'src/constants/constans';
 import { Users } from 'src/entity/Users.entity';
 import { Repository, UpdateResult } from 'typeorm';
@@ -13,8 +13,7 @@ export class UsersService {
   constructor(
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
-  ) {
-  }
+  ) {}
 
   async getUserByEmail(email: string): Promise<Users> {
     const user = await this.usersRepository.findOne({
@@ -23,7 +22,7 @@ export class UsersService {
     return user;
   }
 
-  async findOne(authDto: findOneDto): Promise<Users> {
+  async findOne(authDto: AuthDto): Promise<Users> {
     return this.usersRepository.findOne(authDto);
   }
 
@@ -64,9 +63,9 @@ export class UsersService {
   ): Promise<UpdateResult> {
     return this.usersRepository.update(id, updateIsBlockDto);
   }
-  
-    // УДАЛЯЕТ НОВОГО USER
+
+  // УДАЛЯЕТ НОВОГО USER
   async remove(id: string): Promise<void> {
     await this.usersRepository.delete(id);
   }
-
+}
