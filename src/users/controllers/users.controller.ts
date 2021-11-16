@@ -21,25 +21,24 @@ import { UsersService } from '../services/users.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {
-  }
+  constructor(private readonly usersService: UsersService) {}
 
   //   GET /users   получаем всех USERS
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get()
   findAll(): Promise<Users[]> {
     return this.usersService.findAll();
   }
 
   //   GET /users/employee   получаем всех Employees
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('/employee')
   findEmployees(): Promise<Users[]> {
     return this.usersService.findEmployees();
   }
 
   //   GET /users/admin-employee   получаем всех Admins и Employees
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('/admin-employee')
   findAdminsAndEmployees(): Promise<Users[]> {
     return this.usersService.findAdminsAndEmployees();
@@ -60,9 +59,9 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
     return this.usersService.update(id, updateUserDto);
- }
-  
-  //   PUT /users   обновляем is_block у user
+  }
+
+  //   PUT /users/id   обновляем is_block у user
   @Put(':id')
   updateIsBlock(
     @Param('id') id: string,
@@ -70,11 +69,9 @@ export class UsersController {
   ): Promise<UpdateResult> {
     return this.usersService.updateIsBlock(id, updateIsBlockDto);
   }
-  
-  
-   @Delete(':id')
+
+  @Delete(':id')
   deleteAction(@Param('id') id: string): Promise<void> {
     return this.usersService.remove(id);
   }
 }
-
