@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  ManyToOne,
+} from 'typeorm';
 import { Users } from './Users.entity';
 
 export type VacationType = 'vacation' | 'sick';
@@ -9,13 +15,13 @@ export class Vacations {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToMany(() => Users, (users) => users.id)
-  user_id: Users[];
+  @ManyToOne(() => Users, (user: Users) => user.id)
+  public user: Users;
 
-  @Column({ type: 'timestamptz' })
+  @Column({ type: 'timestamp' })
   start_date: Date;
 
-  @Column({ type: 'timestamptz' })
+  @Column({ type: 'timestamp' })
   end_date: Date;
 
   @Column({
@@ -27,6 +33,7 @@ export class Vacations {
   @Column({
     type: 'enum',
     enum: ['approved', 'pending'],
+    default: 'pending',
   })
   status: StatusVacationType;
 }
