@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  BeforeInsert,
+  OneToMany,
+} from 'typeorm';
 import * as crypto from 'crypto';
+import { Vacations } from './Vacations.entity';
 
 export type UserRoleType = 'employee' | 'admin' | 'super';
 
@@ -39,4 +46,7 @@ export class Users {
 
   @Column({ default: 5 })
   public available_sick_days: number;
+
+  @OneToMany(() => Vacations, (vacation) => vacation.user)
+  public vacations: Vacations[];
 }
