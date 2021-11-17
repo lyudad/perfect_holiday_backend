@@ -18,11 +18,11 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UpdateIsBlockDto } from '../dto/update-isblock.dto';
 import { UsersService } from '../services/users.service';
+import { UpdateStatusDto } from '../dto/update-status.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {
-  }
+  constructor(private readonly usersService: UsersService) {}
 
   //   GET /users   получаем всех USERS
   @UseGuards(JwtAuthGuard)
@@ -60,8 +60,8 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
     return this.usersService.update(id, updateUserDto);
- }
-  
+  }
+
   //   PUT /users   обновляем is_block у user
   @Put(':id')
   updateIsBlock(
@@ -70,11 +70,18 @@ export class UsersController {
   ): Promise<UpdateResult> {
     return this.usersService.updateIsBlock(id, updateIsBlockDto);
   }
-  
-  
-   @Delete(':id')
+
+  // PUT /users Подтверждает или отклоняет отпуск (Обновляет поле status approve | pending)
+  @Put(':id')
+  updateStatus(
+    @Param('id') id: string,
+    @Body() updateStatusDto: UpdateStatusDto,
+  ): Promise<UpdateResult> {
+    return this.usersService.updateStatus(id, updateStatusDto);
+  }
+
+  @Delete(':id')
   deleteAction(@Param('id') id: string): Promise<void> {
     return this.usersService.remove(id);
   }
 }
-
