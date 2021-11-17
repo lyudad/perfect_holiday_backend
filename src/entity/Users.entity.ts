@@ -1,6 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  BeforeInsert,
+  OneToMany,
+} from 'typeorm';
 import * as crypto from 'crypto';
 import { ApiProperty } from '@nestjs/swagger';
+import { Vacations } from './Vacations.entity';
 
 export type UserRoleType = 'employee' | 'admin' | 'super';
 
@@ -50,4 +57,7 @@ export class Users {
   @ApiProperty()
   @Column({ default: 5 })
   public available_sick_days: number;
+
+  @OneToMany(() => Vacations, (vacation) => vacation.user)
+  public vacations: Vacations[];
 }

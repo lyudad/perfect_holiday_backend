@@ -19,9 +19,8 @@ export class Vacations {
   @Column({ type: 'timestamptz' })
   start_date: Date;
 
-  @ApiProperty()
-  @Column({ type: 'timestamptz' })
-  end_date: Date;
+  @Column({ type: 'timestamp' })
+  start_date: Date;
 
   @ApiProperty()
   @Column({
@@ -34,6 +33,10 @@ export class Vacations {
   @Column({
     type: 'enum',
     enum: ['approved', 'pending'],
+    default: 'pending',
   })
   status: StatusVacationType;
+
+  @ManyToOne(() => Users, (user) => user.vacations)
+  public user: Users;
 }
