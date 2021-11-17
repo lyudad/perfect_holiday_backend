@@ -62,7 +62,7 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
-  //   PUT /users   обновляем is_block у user
+  //   PUT /users/id   обновляем is_block у user
   @Put(':id')
   updateIsBlock(
     @Param('id') id: string,
@@ -81,7 +81,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  deleteAction(@Param('id') id: string): Promise<void> {
+  deleteAction(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
 }
