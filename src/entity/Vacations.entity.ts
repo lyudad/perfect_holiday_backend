@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  ManyToOne,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { Users } from './Users.entity';
 
 export type VacationType = 'vacation' | 'sick';
@@ -14,9 +8,6 @@ export type StatusVacationType = 'approved' | 'pending';
 export class Vacations {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @ManyToOne(() => Users, (user: Users) => user.id)
-  public user: Users;
 
   @Column({ type: 'timestamp' })
   start_date: Date;
@@ -36,4 +27,7 @@ export class Vacations {
     default: 'pending',
   })
   status: StatusVacationType;
+
+  @ManyToOne(() => Users, (user) => user.vacations)
+  public user: Users;
 }

@@ -24,21 +24,21 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   //   GET /users   получаем всех USERS
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll(): Promise<Users[]> {
     return this.usersService.findAll();
   }
 
   //   GET /users/employee   получаем всех Employees
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('/employee')
   findEmployees(): Promise<Users[]> {
     return this.usersService.findEmployees();
   }
 
   //   GET /users/admin-employee   получаем всех Admins и Employees
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('/admin-employee')
   findAdminsAndEmployees(): Promise<Users[]> {
     return this.usersService.findAdminsAndEmployees();
@@ -71,7 +71,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  deleteAction(@Param('id') id: string): Promise<void> {
+  deleteAction(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
 }

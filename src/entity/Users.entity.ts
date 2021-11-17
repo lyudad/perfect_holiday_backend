@@ -47,11 +47,6 @@ export class Users {
   @Column({ default: 5 })
   public available_sick_days: number;
 
-  @OneToMany(
-    () => Vacations,
-    (vacation: Vacations) => {
-      vacation;
-    },
-  )
+  @OneToMany(() => Vacations, (vacation) => vacation.user)
   public vacations: Vacations[];
 }

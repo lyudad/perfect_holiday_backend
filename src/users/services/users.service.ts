@@ -3,10 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { findOneDto } from 'src/auth/auth.dto';
 import { Roles } from 'src/constants/constans';
 import { Users } from 'src/entity/Users.entity';
-import { Repository, UpdateResult } from 'typeorm';
+import { getConnection, Repository, UpdateResult } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UpdateIsBlockDto } from '../dto/update-isblock.dto';
+import { Vacations } from 'src/entity/Vacations.entity';
 
 @Injectable()
 export class UsersService {
@@ -64,10 +65,19 @@ export class UsersService {
     return this.usersRepository.update(id, updateIsBlockDto);
   }
 
-  // УДАЛЯЕТ НОВОГО USER
-  async remove(id: string): Promise<void> {
-    await this.usersRepository.query(`
-    DELETE FROM ${process.env.DB}.users WHERE (${process.env.DB}.users.id = '${id}')
-    `);
+  // УДАЛЯЕТ  USER
+  async remove(id: string) {
+    await getConnection()
+      .createQueryBuilder()
+      .delete()
+      .from(Vacations)
+      .where('userId = :userId', { userId: id })
+      .execute();
+    return getConnection()
+      .createQueryBuilder()
+      .delete()
+      .from(Users)
+      .where('id = :id', { id: id })
+      .execute();
   }
 }

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Users } from 'src/entity/Users.entity';
 import { Vacations } from 'src/entity/Vacations.entity';
-import { Repository } from 'typeorm';
+import { getConnection, getRepository, Repository } from 'typeorm';
 
 @Injectable()
 export class CasualService {
@@ -11,44 +12,58 @@ export class CasualService {
   ) {}
 
   // Находит все отпуска работкиков
-  async findAll(): Promise<Vacations[]> {
-    return this.casualRepository.query(`
-    SELECT ${process.env.DB}.vacations.*, ${process.env.DB}.users.*
-    FROM ${process.env.DB}.vacations 
-    INNER JOIN ${process.env.DB}.users 
-    ON (${process.env.DB}.vacations.userId=${process.env.DB}.users.id)
-    `);
+  async findAll() {
+    return getRepository(Users)
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.vacations', 'vacations')
+      .getMany();
   }
 
   // Находит все выходные пользователя по его id
-  async findAllRestDays(id): Promise<Vacations> {
-    return this.casualRepository.query(`
-      SELECT ${process.env.DB}.vacations.*, ${process.env.DB}.users.last_name
-      FROM ${process.env.DB}.vacations 
-      INNER JOIN ${process.env.DB}.users 
-      ON (${process.env.DB}.vacations.userId=${process.env.DB}.users.id)
-      WHERE ${process.env.DB}.vacations.userId=${id}
-    `);
+  async findAllRestDays(id) {
+    return getRepository(Users)
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.vacations', 'vacations')
+      .where('vacations.userId = :userId', { userId: `${id}` })
+      .getMany();
   }
 
   // Создает начальный день, конечный день и тип отпуска
-  async create(createRestday, idfrompath): Promise<Vacations> {
-    return this.casualRepository.query(`
-    INSERT INTO ${process.env.DB}.vacations (start_date, end_date, type, userId) VALUES ('${createRestday.start_date}', '${createRestday.end_date}', '${createRestday.type}', ${idfrompath}) 
-    `);
+  async create(createRestday, idfrompath) {
+    return getConnection()
+      .createQueryBuilder()
+      .insert()
+      .into(Vacations)
+      .values([
+        {
+          start_date: createRestday.start_date,
+          end_date: createRestday.end_date,
+          type: createRestday.type,
+          user: idfrompath,
+        },
+      ])
+      .execute();
   }
 
   // Подтверждает или отклоняет отпуск (Меняет поле STATUS   approve | pending)
-  async updateStatus(changeStatus, idfrompath): Promise<Vacations> {
-    return this.casualRepository.query(`
-      UPDATE ${process.env.DB}.vacations SET status = '${changeStatus.status}' WHERE (id = '${changeStatus.id}' AND userId = '${idfrompath}');
-    `);
+  async updateStatus(changeStatus, idfrompath) {
+    return getConnection()
+      .createQueryBuilder()
+      .update('vacations')
+      .set({ status: changeStatus.status })
+      .where('vacations.id = :id', { id: changeStatus.id })
+      .andWhere('vacations.userId=:userId', { userId: idfrompath })
+      .execute();
   }
 
   // Удаляет забронированый отпуск с таблицы по id vacations
-  async deleteRestDay(deleteRest, idfrompath): Promise<Vacations> {
-    return this.casualRepository.query(`
-      DELETE FROM ${process.env.DB}.vacations WHERE (id = '${deleteRest.id}' AND userId = '${idfrompath}');
-    `);
+  async deleteRestDay(deleteRest, idfrompath) {
+    return getConnection()
+      .createQueryBuilder()
+      .delete()
+      .from('vacations')
+      .where('id = :id', { id: deleteRest.id })
+      .andWhere('userId=:userId', { userId: idfrompath })
+      .execute();
   }
 }
