@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { findOneDto } from 'src/auth/auth.dto';
+import { AuthDto } from 'src/auth/auth.dto';
 import { Roles } from 'src/constants/constans';
 import { Users } from 'src/entity/Users.entity';
 import { getConnection, Repository, UpdateResult } from 'typeorm';
@@ -23,7 +23,7 @@ export class UsersService {
     return user;
   }
 
-  async findOne(authDto: findOneDto): Promise<Users> {
+  async findOne(authDto: AuthDto): Promise<Users> {
     return this.usersRepository.findOne(authDto);
   }
 
