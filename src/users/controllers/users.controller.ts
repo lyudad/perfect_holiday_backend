@@ -71,7 +71,7 @@ export class UsersController {
     return this.usersService.updateIsBlock(id, updateIsBlockDto);
   }
 
-  // PUT /users Подтверждает или отклоняет отпуск (Обновляет поле status approve | pending)
+  // PUT /users Подтверждает или отклоняет отпуск (Обновляет поле status)
   @Put(':id')
   updateStatus(
     @Param('id') id: string,

@@ -7,11 +7,8 @@ import { getConnection, Repository, UpdateResult } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UpdateIsBlockDto } from '../dto/update-isblock.dto';
-<<<<<<< HEAD
 import { UpdateStatusDto } from '../dto/update-status.dto';
-=======
 import { Vacations } from 'src/entity/Vacations.entity';
->>>>>>> dev
 
 @Injectable()
 export class UsersService {
@@ -69,19 +66,17 @@ export class UsersService {
     return this.usersRepository.update(id, updateIsBlockDto);
   }
 
-<<<<<<< HEAD
   // Подтверждает или отклоняет отпуск
-  async updateStatus(
-    id: string,
-    updateStatusDto: UpdateStatusDto,
-  ): Promise<UpdateResult> {
-    return this.usersRepository.update(id, updateStatusDto);
+  async updateStatus(updateStatusDto, id) {
+    return getConnection()
+      .createQueryBuilder()
+      .andWhere('vacations.userId=:userId', { userId: id })
+      .update('vacations')
+      .set({ status: updateStatusDto.status })
+      .where('vacations.id = :id', { id: updateStatusDto.id })
+      .execute();
   }
 
-  // УДАЛЯЕТ НОВОГО USER
-  async remove(id: string): Promise<void> {
-    await this.usersRepository.delete(id);
-=======
   // УДАЛЯЕТ  USER
   async remove(id: string) {
     await getConnection()
@@ -96,6 +91,5 @@ export class UsersService {
       .from(Users)
       .where('id = :id', { id: id })
       .execute();
->>>>>>> dev
   }
 }
