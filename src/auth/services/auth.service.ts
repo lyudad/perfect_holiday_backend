@@ -3,12 +3,14 @@ import { Users } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/services/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { MailService } from '../../mail/services/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
     private jwtService: JwtService,
+    private mailService: MailService
   ) {}
 
   async validate(email: string, password: string): Promise<Users> | null {
@@ -31,6 +33,7 @@ export class AuthService {
       email: user.email,
       sub: user.id,
     };
+    await this.mailService.sendUserConfirmation(user,  this.jwtService.sign(payload));
     return {
       access_token: this.jwtService.sign(payload),
     };

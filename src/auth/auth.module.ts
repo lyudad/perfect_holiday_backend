@@ -9,6 +9,7 @@ import { Users } from 'src/users/entities/user.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   providers: [AuthService, UsersService, JwtStrategy, LocalStrategy],
@@ -25,6 +26,7 @@ import { LocalStrategy } from './strategies/local.strategy';
         expiresIn: '24h',
       },
     }),
+    MailModule
   ],
   exports: [AuthService, JwtModule],
 })
