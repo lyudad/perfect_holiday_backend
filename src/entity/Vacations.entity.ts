@@ -16,7 +16,6 @@ export class Vacations {
   start_date: Date;
 
   @ApiProperty()
-  @ApiProperty()
   @Column({ type: 'timestamp' })
   end_date: Date;
 

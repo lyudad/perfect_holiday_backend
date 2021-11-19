@@ -7,6 +7,7 @@ import { getConnection, Repository, UpdateResult } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UpdateIsBlockDto } from '../dto/update-isblock.dto';
+import { UpdateStatusDto } from '../dto/update-status.dto';
 import { Vacations } from 'src/entity/Vacations.entity';
 
 @Injectable()
@@ -63,6 +64,17 @@ export class UsersService {
     updateIsBlockDto: UpdateIsBlockDto,
   ): Promise<UpdateResult> {
     return this.usersRepository.update(id, updateIsBlockDto);
+  }
+
+  // Подтверждает или отклоняет отпуск
+  async updateStatus(updateStatusDto, id) {
+    return getConnection()
+      .createQueryBuilder()
+      .andWhere('vacations.userId=:userId', { userId: id })
+      .update('vacations')
+      .set({ status: updateStatusDto.status })
+      .where('vacations.id = :id', { id: updateStatusDto.id })
+      .execute();
   }
 
   // УДАЛЯЕТ  USER
