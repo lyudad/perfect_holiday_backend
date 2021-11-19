@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  ManyToOne,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { Users } from './Users.entity';
 
 export type VacationType = 'vacation' | 'sick';
@@ -16,10 +10,6 @@ export class Vacations {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
-
-  @ApiProperty()
-  @OneToMany(() => Users, (users) => users.id)
-  user_id: Users[];
 
   @ApiProperty()
   @Column({ type: 'timestamp' })
