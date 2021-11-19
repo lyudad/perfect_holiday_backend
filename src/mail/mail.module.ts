@@ -14,17 +14,18 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       // imports: [ConfigModule], // import module if not enabled globally
 
         // transport: config.get("MAIL_TRANSPORT"),
-        // or
+
         transport: {
-          host: process.env.MAIL_HOST,
+          service: 'gmail',
+          host: 'smtp.gmail.com',
           secure: false,
           auth: {
-            user: process.env.MAIL_USER,
-            pass: process.env.MAIL_PASSWORD,
+            user: 'yaroslav.brila@gmail.com',
+            pass: '123',
           },
         },
         defaults: {
-          from: `"No Reply" <${process.env.MAIL_FROM}>`,
+          from: `"No Reply" <${'yaroslav.bryla@gmail.com'}>`,
         },
         template: {
           dir: join(__dirname, 'templates'),

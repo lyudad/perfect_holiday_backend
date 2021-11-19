@@ -10,6 +10,7 @@ import { MailModule } from './mail/mail.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       envFilePath: '.env',
     }),
     TypeOrmModule.forRoot({
@@ -24,8 +25,7 @@ import { MailModule } from './mail/mail.module';
     }),
     AuthModule,
     UsersModule,
-    CasualModule,
-    MailModule
+    CasualModule
   ],
   controllers: [],
   providers: [],

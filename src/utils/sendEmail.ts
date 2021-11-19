@@ -4,8 +4,8 @@ import * as nodemailer from 'nodemailer'
 export const SendEmail=async () => {
   let transporter = nodemailer.createTransport({
     host: "smtp.ethereal.email",
-    port: 587,
-    secure: false, // true for 465, false for other ports
+    port: 465,
+    secure: true, // true for 465, false for other ports
     auth: {
       user: "kitty.keeling65@ethereal.email", // generated ethereal user
       pass: "563JGzwfsEWVtUHJPP", // generated ethereal password

@@ -4,7 +4,7 @@ import {SendEmail} from './utils/sendEmail';
 import * as dotenv from 'dotenv'
 dotenv.config()
 async function bootstrap() {
-   SendEmail();
+  //await SendEmail();
   const PORT = process.env.PORT || 3000;
   const app = await NestFactory.create(AppModule);
 
