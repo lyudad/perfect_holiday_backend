@@ -18,6 +18,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UpdateIsBlockDto } from '../dto/update-isblock.dto';
 import { UsersService } from '../services/users.service';
+import { UpdateStatusDto } from '../dto/update-status.dto';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('users')
@@ -135,6 +136,14 @@ export class UsersController {
     @Body() updateIsBlockDto: UpdateIsBlockDto,
   ): Promise<UpdateResult> {
     return this.usersService.updateIsBlock(id, updateIsBlockDto);
+  }
+
+  @Put(':id')
+  updateStatus(
+    @Param('id') id: string,
+    @Body() updateStatusDto: UpdateStatusDto,
+  ): Promise<UpdateResult> {
+    return this.usersService.updateStatus(id, updateStatusDto);
   }
 
   @Delete(':id')

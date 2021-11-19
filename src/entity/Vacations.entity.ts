@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  ManyToOne,
+} from 'typeorm';
 import { Users } from './Users.entity';
 
 export type VacationType = 'vacation' | 'sick';
@@ -16,11 +22,12 @@ export class Vacations {
   user_id: Users[];
 
   @ApiProperty()
-  @Column({ type: 'timestamptz' })
-  start_date: Date;
-
   @Column({ type: 'timestamp' })
   start_date: Date;
+
+  @ApiProperty()
+  @Column({ type: 'timestamp' })
+  end_date: Date;
 
   @ApiProperty()
   @Column({
