@@ -19,21 +19,21 @@ export class CasualService {
       .getMany();
   }
 
+  //  GET  /casual/pending   Находит все не подтвержденныеч выходные пользователей(со статусом PENDING)
+  async findAllNotApprovedRestDays() {
+    return getRepository(Vacations)
+      .createQueryBuilder('vacation')
+      .innerJoinAndSelect('vacation.user', 'user')
+      .where('vacation.status = :status', { status: 'pending' })
+      .getMany();
+  }
+
   // Находит все выходные пользователя по его id
   async findAllRestDays(id) {
     return getRepository(Users)
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.vacations', 'vacations')
       .where('vacations.userId = :userId', { userId: `${id}` })
-      .getMany();
-  }
-
-  // Находит все не подтвержденныеч выходные пользователей(со статусом PENDING)
-  async findAllNotApprovedRestDays() {
-    return getRepository(Users)
-      .createQueryBuilder('user')
-      .innerJoinAndSelect('user.vacations', 'vacations')
-      .where('vacations.status = :status', { status: 'pending' })
       .getMany();
   }
 
