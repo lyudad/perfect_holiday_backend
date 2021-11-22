@@ -25,6 +25,13 @@ export class CasualController {
     return this.casualService.findAll();
   }
 
+  //  GET  /casual/pending   Находит все не подтвержденныеч выходные пользователей(со статусом PENDING)
+  @UseGuards(JwtAuthGuard)
+  @Get('pending')
+  findAllNotApprovedRestDays() {
+    return this.casualService.findAllNotApprovedRestDays();
+  }
+
   // GET   /casual/id   Находит все выходные пользователя по его id
   @UseGuards(JwtAuthGuard)
   @Get(':id')

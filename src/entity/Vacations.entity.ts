@@ -12,11 +12,11 @@ export class Vacations {
   id: number;
 
   @ApiProperty()
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'date' })
   start_date: Date;
 
   @ApiProperty()
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'date' })
   end_date: Date;
 
   @ApiProperty()
