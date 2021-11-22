@@ -28,6 +28,15 @@ export class CasualService {
       .getMany();
   }
 
+  // Находит все не подтвержденныеч выходные пользователей(со статусом PENDING)
+  async findAllNotApprovedRestDays() {
+    return getRepository(Users)
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.vacations', 'vacations')
+      .where('vacations.status = :status', { status: 'pending' })
+      .getMany();
+  }
+
   // Создает начальный день, конечный день и тип отпуска
   async create(createRestday, idfrompath) {
     return getConnection()
