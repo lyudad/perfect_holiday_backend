@@ -6,6 +6,7 @@ import { CasualModule } from './casual/casual.module';
 import { Users } from './entity/Users.entity';
 import { ConfigModule } from '@nestjs/config';
 import { Vacations } from './entity/Vacations.entity';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { Vacations } from './entity/Vacations.entity';
     AuthModule,
     UsersModule,
     CasualModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],

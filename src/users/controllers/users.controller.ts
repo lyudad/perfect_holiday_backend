@@ -79,7 +79,7 @@ export class UsersController {
     return this.usersService.findAdminsAndEmployees();
   }
 
-  //   POST /users  добавляем нового User
+  //   POST /users  добавляем нового User и отправляет пароль
   @Post()
   @ApiResponse({
     status: 201,
@@ -96,6 +96,12 @@ export class UsersController {
   @ApiBody({ type: CreateUserDto })
   create(@Body() createUserDto: CreateUserDto): Promise<Users> {
     return this.usersService.create(createUserDto);
+  }
+
+  //   GET /users/push-password/:id  Отправляет пароль по эмаил User
+  @Get('/push-password/:id')
+  getPassword(@Param('id') id: string) {
+    return this.usersService.getPassword(id);
   }
 
   //   PUT /users   обновляем email, first_name, last_name у user

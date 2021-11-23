@@ -3,18 +3,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AuthDto } from 'src/auth/auth.dto';
 import { Roles } from 'src/constants/constans';
 import { Users } from 'src/entity/Users.entity';
-import { getConnection, Repository, UpdateResult } from 'typeorm';
+import {
+  getConnection,
+  getRepository,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UpdateIsBlockDto } from '../dto/update-isblock.dto';
-import { UpdateStatusDto } from '../dto/update-status.dto';
 import { Vacations } from 'src/entity/Vacations.entity';
+import { MailService } from 'src/mail/mail.service';
+import { generatePassword } from 'src/utils/generatePassword';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
+    private mailService: MailService,
   ) {}
 
   async getUserByEmail(email: string): Promise<Users> {
@@ -45,9 +52,23 @@ export class UsersService {
     });
   }
 
-  // СОЗДАЕТ НОВОГО USER
+  // СОЗДАЕТ НОВОГО USER И отправляет EMAIL на почту
   async create(createUserDto: CreateUserDto): Promise<Users> {
-    return this.usersRepository.save(createUserDto);
+    const userPassword = generatePassword();
+    await this.mailService.send(userPassword, createUserDto.email);
+    return this.usersRepository.save({
+      ...createUserDto,
+      password: userPassword,
+    });
+  }
+
+  // Отправляет пароль по эмаил User
+  async getPassword(id: string) {
+    const us = getRepository(Users)
+      .createQueryBuilder('user')
+      .where('user.id = :id', { id })
+      .getOne();
+    await this.mailService.send((await us).password, (await us).email);
   }
 
   // ОБНОВЛЯЕТ email, first_name, last_name у user
