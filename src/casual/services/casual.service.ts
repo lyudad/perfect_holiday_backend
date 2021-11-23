@@ -19,6 +19,15 @@ export class CasualService {
       .getMany();
   }
 
+  //  GET  /casual/pending   Находит все не подтвержденныеч выходные пользователей(со статусом PENDING)
+  async findAllNotApprovedRestDays() {
+    return getRepository(Vacations)
+      .createQueryBuilder('vacation')
+      .innerJoinAndSelect('vacation.user', 'user')
+      .where('vacation.status = :status', { status: 'pending' })
+      .getMany();
+  }
+
   // Находит все выходные пользователя по его id
   async findAllRestDays(id) {
     return getRepository(Users)
