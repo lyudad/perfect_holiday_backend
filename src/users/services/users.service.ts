@@ -14,7 +14,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { UpdateIsBlockDto } from '../dto/update-isblock.dto';
 import { Vacations } from 'src/entity/Vacations.entity';
 import { MailService } from 'src/mail/mail.service';
-import { generatePassword } from 'src/utils/generatePassword';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UsersService {
@@ -35,51 +35,51 @@ export class UsersService {
     return this.usersRepository.findOne(authDto);
   }
 
-  //  НАХОДИТ ВСЕХ USERS
   async findAll(): Promise<Users[]> {
     return this.usersRepository.find();
   }
 
-  //  НАХОДИТ ТОЛЬКО ВСЕХ EMPLOYEES
   async findEmployees(): Promise<Users[]> {
     return this.usersRepository.find({ where: { role: Roles.EMPLOYEE } });
   }
 
-  // НАХОДИТ ВСЕХ ADMINS И EMPLOYEES
   async findAdminsAndEmployees(): Promise<Users[]> {
     return this.usersRepository.find({
       where: [{ role: Roles.ADMIN }, { role: Roles.EMPLOYEE }],
     });
   }
 
-  // СОЗДАЕТ НОВОГО USER И отправляет EMAIL на почту
-  async create(createUserDto: CreateUserDto): Promise<Users> {
-    const userPassword = generatePassword();
-    await this.mailService.send(userPassword, createUserDto.email);
+  async createUser(createUserDto: CreateUserDto): Promise<Users> {
+    const userPassword = uuidv4();
+    await this.mailService.sendPassword(userPassword, createUserDto.email);
     return this.usersRepository.save({
       ...createUserDto,
       password: userPassword,
     });
   }
 
-  // Отправляет пароль по эмаил User
   async getPassword(id: string) {
-    const us = getRepository(Users)
+    const user = getRepository(Users)
       .createQueryBuilder('user')
       .where('user.id = :id', { id })
       .getOne();
-    await this.mailService.send((await us).password, (await us).email);
+    await this.mailService.sendPassword(
+      (
+        await user
+      ).password,
+      (
+        await user
+      ).email,
+    );
   }
 
-  // ОБНОВЛЯЕТ email, first_name, last_name у user
-  async update(
+  async updateUser(
     id: string,
     updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
     return this.usersRepository.update(id, updateUserDto);
   }
 
-  // ОБНОВЛЯЕТ is_block у user
   async updateIsBlock(
     id: string,
     updateIsBlockDto: UpdateIsBlockDto,
@@ -87,7 +87,6 @@ export class UsersService {
     return this.usersRepository.update(id, updateIsBlockDto);
   }
 
-  // Подтверждает или отклоняет отпуск
   async updateStatus(updateStatusDto, id) {
     return getConnection()
       .createQueryBuilder()
@@ -98,8 +97,7 @@ export class UsersService {
       .execute();
   }
 
-  // УДАЛЯЕТ  USER
-  async remove(id: string) {
+  async removeUser(id: string) {
     await getConnection()
       .createQueryBuilder()
       .delete()
