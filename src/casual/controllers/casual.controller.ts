@@ -60,9 +60,9 @@ export class CasualController {
 
   @Roles(Role.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Put(':id')
-  updateStatus(@Body() changeStatus, @Param('id') idfrompath: string) {
-    return this.casualService.updateStatus(changeStatus, idfrompath);
+  @Put()
+  updateStatus(@Body() changeStatus) {
+    return this.casualService.updateStatus(changeStatus);
   }
 
   @Roles(Role.Admin)
