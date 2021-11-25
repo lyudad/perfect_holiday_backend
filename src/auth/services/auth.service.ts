@@ -3,6 +3,7 @@ import { Users } from 'src/entity/Users.entity';
 import { UsersService } from 'src/users/services/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { Role } from 'src/roles/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
       }
       // const passEq = bcrypt.compare(password, user.password);
       if (user && password === user.password) {
+        Role[user.role];
         return user;
       }
     } catch (error) {
@@ -30,7 +32,9 @@ export class AuthService {
     const payload = {
       email: user.email,
       sub: user.id,
+      role: user.role,
     };
+
     return {
       access_token: this.jwtService.sign(payload),
       role: user.role,

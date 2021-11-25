@@ -20,12 +20,16 @@ import { UpdateIsBlockDto } from '../dto/update-isblock.dto';
 import { UsersService } from '../services/users.service';
 import { UpdateStatusDto } from '../dto/update-status.dto';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/roles/roles.decorator';
+import { Role } from 'src/roles/role.enum';
+import { RolesGuard } from 'src/roles/roles.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
   @ApiResponse({
     status: 200,
@@ -41,7 +45,8 @@ export class UsersController {
   findAll(): Promise<Users[]> {
     return this.usersService.findAll();
   }
-
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @UseGuards(JwtAuthGuard)
   @Get('/employee')
   @ApiResponse({
@@ -58,7 +63,8 @@ export class UsersController {
   findEmployees(): Promise<Users[]> {
     return this.usersService.findEmployees();
   }
-
+  @Roles(Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @UseGuards(JwtAuthGuard)
   @Get('/admin-employee')
   @ApiResponse({
@@ -76,6 +82,8 @@ export class UsersController {
     return this.usersService.findAdminsAndEmployees();
   }
 
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
   @ApiResponse({
     status: 201,
@@ -94,11 +102,15 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('/push-password/:id')
   getPassword(@Param('id') id: string) {
     return this.usersService.getPassword(id);
   }
 
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Put(':id')
   @ApiResponse({
     status: 200,
@@ -118,6 +130,8 @@ export class UsersController {
     return this.usersService.updateUser(id, updateUserDto);
   }
 
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Put(':id')
   @ApiResponse({
     status: 200,
@@ -137,6 +151,8 @@ export class UsersController {
     return this.usersService.updateIsBlock(id, updateIsBlockDto);
   }
 
+  @Roles(Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Put(':id')
   updateStatus(
     @Param('id') id: string,
@@ -145,6 +161,8 @@ export class UsersController {
     return this.usersService.updateStatus(id, updateStatusDto);
   }
 
+  @Roles(Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
   @ApiResponse({
     status: 200,
@@ -159,4 +177,5 @@ export class UsersController {
   removeUser(@Param('id') id: string) {
     return this.usersService.removeUser(id);
   }
+  roles: Role[];
 }
