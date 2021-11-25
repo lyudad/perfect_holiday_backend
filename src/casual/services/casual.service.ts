@@ -11,7 +11,6 @@ export class CasualService {
     private readonly casualRepository: Repository<Vacations>,
   ) {}
 
-  // Находит все отпуска работкиков
   async findAll() {
     return getRepository(Users)
       .createQueryBuilder('user')
@@ -19,7 +18,6 @@ export class CasualService {
       .getMany();
   }
 
-  //  GET  /casual/pending   Находит все не подтвержденныеч выходные пользователей(со статусом PENDING)
   async findAllNotApprovedRestDays() {
     return getRepository(Vacations)
       .createQueryBuilder('vacation')
@@ -28,7 +26,6 @@ export class CasualService {
       .getMany();
   }
 
-  // Находит все выходные пользователя по его id
   async findAllRestDays(id) {
     return getRepository(Users)
       .createQueryBuilder('user')
@@ -37,8 +34,7 @@ export class CasualService {
       .getMany();
   }
 
-  // Создает начальный день, конечный день и тип отпуска
-  async create(createRestday, idfrompath) {
+  async createStartAndLastRestDay(createRestday, idfrompath) {
     return getConnection()
       .createQueryBuilder()
       .insert()
@@ -54,7 +50,6 @@ export class CasualService {
       .execute();
   }
 
-  // Подтверждает или отклоняет отпуск (Меняет поле STATUS   approve | pending)
   async updateStatus(changeStatus, idfrompath) {
     return getConnection()
       .createQueryBuilder()
@@ -65,7 +60,6 @@ export class CasualService {
       .execute();
   }
 
-  // Удаляет забронированый отпуск с таблицы по id vacations
   async deleteRestDay(deleteRest, idfrompath) {
     return getConnection()
       .createQueryBuilder()

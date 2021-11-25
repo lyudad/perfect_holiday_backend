@@ -20,13 +20,16 @@ import { UpdateIsBlockDto } from '../dto/update-isblock.dto';
 import { UsersService } from '../services/users.service';
 import { UpdateStatusDto } from '../dto/update-status.dto';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/roles/roles.decorator';
+import { Role } from 'src/roles/role.enum';
+import { RolesGuard } from 'src/roles/roles.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  //   GET /users   получаем всех USERS
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
   @ApiResponse({
     status: 200,
@@ -42,8 +45,8 @@ export class UsersController {
   findAll(): Promise<Users[]> {
     return this.usersService.findAll();
   }
-
-  //   GET /users/employee   получаем всех Employees
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @UseGuards(JwtAuthGuard)
   @Get('/employee')
   @ApiResponse({
@@ -60,8 +63,8 @@ export class UsersController {
   findEmployees(): Promise<Users[]> {
     return this.usersService.findEmployees();
   }
-
-  //   GET /users/admin-employee   получаем всех Admins и Employees
+  @Roles(Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @UseGuards(JwtAuthGuard)
   @Get('/admin-employee')
   @ApiResponse({
@@ -79,7 +82,8 @@ export class UsersController {
     return this.usersService.findAdminsAndEmployees();
   }
 
-  //   POST /users  добавляем нового User
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
   @ApiResponse({
     status: 201,
@@ -94,11 +98,19 @@ export class UsersController {
   @HttpCode(HttpStatus.CREATED)
   @Header('Cache-Control', 'none')
   @ApiBody({ type: CreateUserDto })
-  create(@Body() createUserDto: CreateUserDto): Promise<Users> {
-    return this.usersService.create(createUserDto);
+  createUser(@Body() createUserDto: CreateUserDto): Promise<Users> {
+    return this.usersService.createUser(createUserDto);
   }
 
-  //   PUT /users   обновляем email, first_name, last_name у user
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('/push-password/:id')
+  getPassword(@Param('id') id: string) {
+    return this.usersService.getPassword(id);
+  }
+
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Put(':id')
   @ApiResponse({
     status: 200,
@@ -111,14 +123,15 @@ export class UsersController {
   })
   @ApiTags('users')
   @ApiBody({ type: UpdateUserDto })
-  update(
+  updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
-    return this.usersService.update(id, updateUserDto);
+    return this.usersService.updateUser(id, updateUserDto);
   }
 
-  //   PUT /users/id   обновляем is_block у user
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Put(':id')
   @ApiResponse({
     status: 200,
@@ -138,6 +151,8 @@ export class UsersController {
     return this.usersService.updateIsBlock(id, updateIsBlockDto);
   }
 
+  @Roles(Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Put(':id')
   updateStatus(
     @Param('id') id: string,
@@ -146,6 +161,8 @@ export class UsersController {
     return this.usersService.updateStatus(id, updateStatusDto);
   }
 
+  @Roles(Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
   @ApiResponse({
     status: 200,
@@ -157,7 +174,8 @@ export class UsersController {
     description: 'Bad Request',
   })
   @ApiTags('users')
-  deleteAction(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  removeUser(@Param('id') id: string) {
+    return this.usersService.removeUser(id);
   }
+  roles: Role[];
 }

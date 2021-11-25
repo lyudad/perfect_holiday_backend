@@ -12,50 +12,65 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/strategies/guards/jwt-auth.guard';
+import { Role } from 'src/roles/role.enum';
+import { Roles } from 'src/roles/roles.decorator';
+import { RolesGuard } from 'src/roles/roles.guard';
 import { CasualService } from '../services/casual.service';
 
 @Controller('casual')
 export class CasualController {
   constructor(private readonly casualService: CasualService) {}
 
-  //  GET  /casual   Находит все отпуска работкиков
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.casualService.findAll();
   }
 
-  //  GET  /casual/pending   Находит все не подтвержденныеч выходные пользователей(со статусом PENDING)
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('pending')
   findAllNotApprovedRestDays() {
     return this.casualService.findAllNotApprovedRestDays();
   }
 
-  // GET   /casual/id   Находит все выходные пользователя по его id
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Employee)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get(':id')
   findAllRestDays(@Param('id') id: string) {
     return this.casualService.findAllRestDays(id);
   }
 
-  // POST /casual/id Создает начальный день, конечный день и тип отпуска
+  @Roles(Role.Employee)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post(':id')
   @HttpCode(HttpStatus.CREATED)
   @Header('Cache-Control', 'none')
-  create(@Body() createRestday, @Param('id') idfrompath: string) {
-    return this.casualService.create(createRestday, idfrompath);
+  createStartAndLastRestDay(
+    @Body() createRestday,
+    @Param('id') idfrompath: string,
+  ) {
+    return this.casualService.createStartAndLastRestDay(
+      createRestday,
+      idfrompath,
+    );
   }
 
-  // PUT /casual/id Подтверждаем или отклоняем отпуск (Меняет поле STATUS   approve | pending)
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Put(':id')
   updateStatus(@Body() changeStatus, @Param('id') idfrompath: string) {
     return this.casualService.updateStatus(changeStatus, idfrompath);
   }
 
-  // DELETE  /casual/id   Удаляет забронированый отпуск с таблицы по id vacations
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
   deleteRestDay(@Body() deleteRest, @Param('id') idfrompath: string) {
     return this.casualService.deleteRestDay(deleteRest, idfrompath);
   }
+
+  roles: Role[];
 }

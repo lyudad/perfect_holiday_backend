@@ -3,18 +3,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AuthDto } from 'src/auth/auth.dto';
 import { Roles } from 'src/constants/constans';
 import { Users } from 'src/entity/Users.entity';
-import { getConnection, Repository, UpdateResult } from 'typeorm';
+import {
+  getConnection,
+  getRepository,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UpdateIsBlockDto } from '../dto/update-isblock.dto';
-import { UpdateStatusDto } from '../dto/update-status.dto';
 import { Vacations } from 'src/entity/Vacations.entity';
+import { MailService } from 'src/mail/mail.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
+    private mailService: MailService,
   ) {}
 
   async getUserByEmail(email: string): Promise<Users> {
@@ -28,37 +35,51 @@ export class UsersService {
     return this.usersRepository.findOne(authDto);
   }
 
-  //  НАХОДИТ ВСЕХ USERS
   async findAll(): Promise<Users[]> {
     return this.usersRepository.find();
   }
 
-  //  НАХОДИТ ТОЛЬКО ВСЕХ EMPLOYEES
   async findEmployees(): Promise<Users[]> {
     return this.usersRepository.find({ where: { role: Roles.EMPLOYEE } });
   }
 
-  // НАХОДИТ ВСЕХ ADMINS И EMPLOYEES
   async findAdminsAndEmployees(): Promise<Users[]> {
     return this.usersRepository.find({
       where: [{ role: Roles.ADMIN }, { role: Roles.EMPLOYEE }],
     });
   }
 
-  // СОЗДАЕТ НОВОГО USER
-  async create(createUserDto: CreateUserDto): Promise<Users> {
-    return this.usersRepository.save(createUserDto);
+  async createUser(createUserDto: CreateUserDto): Promise<Users> {
+    const userPassword = uuidv4();
+    await this.mailService.sendPassword(userPassword, createUserDto.email);
+    return this.usersRepository.save({
+      ...createUserDto,
+      password: userPassword,
+    });
   }
 
-  // ОБНОВЛЯЕТ email, first_name, last_name у user
-  async update(
+  async getPassword(id: string) {
+    const user = getRepository(Users)
+      .createQueryBuilder('user')
+      .where('user.id = :id', { id })
+      .getOne();
+    await this.mailService.sendPassword(
+      (
+        await user
+      ).password,
+      (
+        await user
+      ).email,
+    );
+  }
+
+  async updateUser(
     id: string,
     updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
     return this.usersRepository.update(id, updateUserDto);
   }
 
-  // ОБНОВЛЯЕТ is_block у user
   async updateIsBlock(
     id: string,
     updateIsBlockDto: UpdateIsBlockDto,
@@ -66,7 +87,6 @@ export class UsersService {
     return this.usersRepository.update(id, updateIsBlockDto);
   }
 
-  // Подтверждает или отклоняет отпуск
   async updateStatus(updateStatusDto, id) {
     return getConnection()
       .createQueryBuilder()
@@ -77,8 +97,7 @@ export class UsersService {
       .execute();
   }
 
-  // УДАЛЯЕТ  USER
-  async remove(id: string) {
+  async removeUser(id: string) {
     await getConnection()
       .createQueryBuilder()
       .delete()

@@ -4,10 +4,11 @@ import { CasualController } from './controllers/casual.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Vacations } from 'src/entity/Vacations.entity';
 import { AuthModule } from 'src/auth/auth.module';
+import { Users } from 'src/entity/Users.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Vacations]),
+    TypeOrmModule.forFeature([Users, Vacations]),
     forwardRef(() => AuthModule),
   ],
   providers: [CasualService],
