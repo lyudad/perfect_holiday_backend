@@ -12,30 +12,39 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/strategies/guards/jwt-auth.guard';
+import { Role } from 'src/roles/role.enum';
+import { Roles } from 'src/roles/roles.decorator';
+import { RolesGuard } from 'src/roles/roles.guard';
 import { CasualService } from '../services/casual.service';
 
 @Controller('casual')
 export class CasualController {
   constructor(private readonly casualService: CasualService) {}
 
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.casualService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('pending')
   findAllNotApprovedRestDays() {
     return this.casualService.findAllNotApprovedRestDays();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Employee)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get(':id')
   findAllRestDays(@Param('id') id: string) {
     return this.casualService.findAllRestDays(id);
   }
 
+  @Roles(Role.Employee)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post(':id')
   @HttpCode(HttpStatus.CREATED)
   @Header('Cache-Control', 'none')
@@ -49,13 +58,19 @@ export class CasualController {
     );
   }
 
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Put(':id')
   updateStatus(@Body() changeStatus, @Param('id') idfrompath: string) {
     return this.casualService.updateStatus(changeStatus, idfrompath);
   }
 
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
   deleteRestDay(@Body() deleteRest, @Param('id') idfrompath: string) {
     return this.casualService.deleteRestDay(deleteRest, idfrompath);
   }
+
+  roles: Role[];
 }
