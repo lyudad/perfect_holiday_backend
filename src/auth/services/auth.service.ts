@@ -17,8 +17,8 @@ export class AuthService {
       if (!user) {
         return null;
       }
-      const passEq = bcrypt.compare(password, user.password);
-      if (user && passEq) {
+      // const passEq = bcrypt.compare(password, user.password);
+      if (user && password === user.password) {
         return user;
       }
     } catch (error) {
@@ -26,13 +26,15 @@ export class AuthService {
     }
   }
 
-  async login(user: Users): Promise<{ access_token: string }> {
+  async login(user: Users) {
     const payload = {
       email: user.email,
       sub: user.id,
     };
     return {
       access_token: this.jwtService.sign(payload),
+      role: user.role,
+      id: user.id,
     };
   }
 }

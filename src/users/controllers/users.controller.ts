@@ -25,7 +25,6 @@ import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  //   GET /users   получаем всех USERS
   @UseGuards(JwtAuthGuard)
   @Get()
   @ApiResponse({
@@ -43,7 +42,6 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  //   GET /users/employee   получаем всех Employees
   @UseGuards(JwtAuthGuard)
   @Get('/employee')
   @ApiResponse({
@@ -61,7 +59,6 @@ export class UsersController {
     return this.usersService.findEmployees();
   }
 
-  //   GET /users/admin-employee   получаем всех Admins и Employees
   @UseGuards(JwtAuthGuard)
   @Get('/admin-employee')
   @ApiResponse({
@@ -79,7 +76,6 @@ export class UsersController {
     return this.usersService.findAdminsAndEmployees();
   }
 
-  //   POST /users  добавляем нового User
   @Post()
   @ApiResponse({
     status: 201,
@@ -94,11 +90,15 @@ export class UsersController {
   @HttpCode(HttpStatus.CREATED)
   @Header('Cache-Control', 'none')
   @ApiBody({ type: CreateUserDto })
-  create(@Body() createUserDto: CreateUserDto): Promise<Users> {
-    return this.usersService.create(createUserDto);
+  createUser(@Body() createUserDto: CreateUserDto): Promise<Users> {
+    return this.usersService.createUser(createUserDto);
   }
 
-  //   PUT /users   обновляем email, first_name, last_name у user
+  @Get('/push-password/:id')
+  getPassword(@Param('id') id: string) {
+    return this.usersService.getPassword(id);
+  }
+
   @Put(':id')
   @ApiResponse({
     status: 200,
@@ -111,14 +111,13 @@ export class UsersController {
   })
   @ApiTags('users')
   @ApiBody({ type: UpdateUserDto })
-  update(
+  updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
-    return this.usersService.update(id, updateUserDto);
+    return this.usersService.updateUser(id, updateUserDto);
   }
 
-  //   PUT /users/id   обновляем is_block у user
   @Put(':id')
   @ApiResponse({
     status: 200,
@@ -157,7 +156,7 @@ export class UsersController {
     description: 'Bad Request',
   })
   @ApiTags('users')
-  deleteAction(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  removeUser(@Param('id') id: string) {
+    return this.usersService.removeUser(id);
   }
 }
