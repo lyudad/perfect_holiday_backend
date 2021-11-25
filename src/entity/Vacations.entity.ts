@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { Users } from './Users.entity';
 
 export type VacationType = 'vacation' | 'sick';
-export type StatusVacationType = 'approved' | 'pending';
+export type StatusVacationType = 'approved' | 'pending' | 'declined';
 
 @Entity('vacations')
 export class Vacations {
@@ -29,7 +29,7 @@ export class Vacations {
   @ApiProperty()
   @Column({
     type: 'enum',
-    enum: ['approved', 'pending'],
+    enum: ['approved', 'pending', 'declined'],
     default: 'pending',
   })
   status: StatusVacationType;
