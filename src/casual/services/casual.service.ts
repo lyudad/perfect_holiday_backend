@@ -50,13 +50,15 @@ export class CasualService {
       .execute();
   }
 
-  async updateStatus(changeStatus, idfrompath) {
+  async updateStatus(changeStatus) {
     return getConnection()
       .createQueryBuilder()
       .update('vacations')
       .set({ status: changeStatus.status })
       .where('vacations.id = :id', { id: changeStatus.id })
-      .andWhere('vacations.userId=:userId', { userId: idfrompath })
+      .andWhere('vacations.userId=:userId', {
+        userId: changeStatus.userId,
+      })
       .execute();
   }
 
