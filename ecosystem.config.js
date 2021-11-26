@@ -1,11 +1,8 @@
 module.exports = {
   apps: [
     {
-      script: 'main.js',
-      watch: '.',
-    },
-    {
-      script: './service-worker/',
+      name: 'perfect_holiday_backend',
+      script: './dist/main.js',
       env: {
         NODE_ENV: 'prod',
         PORT: 8080,
@@ -25,18 +22,4 @@ module.exports = {
       watch: ['./service-worker'],
     },
   ],
-
-  deploy: {
-    production: {
-      user: 'SSH_USERNAME',
-      host: 'SSH_HOSTMACHINE',
-      ref: 'origin/master',
-      repo: 'GIT_REPOSITORY',
-      path: 'DESTINATION_PATH',
-      'pre-deploy-local': '',
-      'post-deploy':
-        'npm install && pm2 reload ecosystem.config.js --env production',
-      'pre-setup': '',
-    },
-  },
 };
