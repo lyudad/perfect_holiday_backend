@@ -2,7 +2,8 @@ module.exports = {
   apps: [
     {
       name: 'perfect_holiday_backend',
-      script: './dist/main.js',
+      script: 'npm',
+      args: 'start',
       env: {
         NODE_ENV: 'prod',
         PORT: 8080,
