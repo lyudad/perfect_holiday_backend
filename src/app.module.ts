@@ -7,6 +7,7 @@ import { Users } from './entity/Users.entity';
 import { ConfigModule } from '@nestjs/config';
 import { Vacations } from './entity/Vacations.entity';
 import { MailModule } from './mail/mail.module';
+import { CronjobModule } from './cronjob/cronjob.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { MailModule } from './mail/mail.module';
     UsersModule,
     CasualModule,
     MailModule,
+    CronjobModule,
   ],
   controllers: [],
   providers: [],
