@@ -62,6 +62,22 @@ export class CasualService {
       .execute();
   }
 
+  async updateRestDays(updateDays, idfrompath) {
+    return getConnection()
+      .createQueryBuilder()
+      .update('vacations')
+      .set({
+        status: updateDays.status,
+        start_date: updateDays.start_date,
+        end_date: updateDays.end_date,
+      })
+      .where('vacations.id = :id', { id: updateDays.id })
+      .andWhere('vacations.userId=:userId', {
+        userId: idfrompath,
+      })
+      .execute();
+  }
+
   async deleteRestDay(deleteRest, idfrompath) {
     return getConnection()
       .createQueryBuilder()
