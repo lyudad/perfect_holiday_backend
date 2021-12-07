@@ -62,7 +62,7 @@ export class CasualService {
       .execute();
   }
 
-  async updateRestDays(updateDays, idfrompath) {
+  async updateRestDays(updateDays) {
     return getConnection()
       .createQueryBuilder()
       .update('vacations')
@@ -73,7 +73,7 @@ export class CasualService {
       })
       .where('vacations.id = :id', { id: updateDays.id })
       .andWhere('vacations.userId=:userId', {
-        userId: idfrompath,
+        userId: updateDays.userId,
       })
       .execute();
   }

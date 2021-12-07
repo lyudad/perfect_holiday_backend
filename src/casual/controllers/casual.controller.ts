@@ -67,9 +67,9 @@ export class CasualController {
 
   @Roles(Role.Admin, Role.SuperAdmin)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Put(':id')
-  updateRestDays(@Body() updateDays, @Param('id') idfrompath: string) {
-    return this.casualService.updateRestDays(updateDays, idfrompath);
+  @Put('editing')
+  updateRestDays(@Body() updateDays) {
+    return this.casualService.updateRestDays(updateDays);
   }
 
   @Roles(Role.Admin)
