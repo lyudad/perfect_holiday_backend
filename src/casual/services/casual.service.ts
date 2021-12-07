@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { debug } from 'console';
 import { Users } from 'src/entity/Users.entity';
 import { Vacations } from 'src/entity/Vacations.entity';
 import { getConnection, getRepository, Repository } from 'typeorm';
@@ -35,19 +36,42 @@ export class CasualService {
   }
 
   async createStartAndLastRestDay(createRestday, idfrompath) {
-    return getConnection()
-      .createQueryBuilder()
-      .insert()
-      .into(Vacations)
-      .values([
-        {
-          start_date: createRestday.start_date,
-          end_date: createRestday.end_date,
-          type: createRestday.type,
-          user: idfrompath,
-        },
-      ])
-      .execute();
+    let lastDay;
+    let diffDate = 0;
+    if (createRestday.type === 'sick') {
+      lastDay = await this.casualRepository.query(
+        `SELECT MAX(end_date) AS last_date FROM vacations
+        WHERE status != 'approved' AND type = 'sick' AND userId = '${idfrompath}'`,
+      );
+    } else {
+      lastDay = await this.casualRepository.query(
+        `SELECT MAX(end_date) AS last_date FROM vacations
+        WHERE status != 'approved' AND type = 'vacation' AND userId = '${idfrompath}'`,
+      );
+    }
+    if (lastDay.map((v) => v.last_date)) {
+      diffDate =
+        (Number(new Date(lastDay.map((v) => v.last_date))) -
+          Number(new Date(createRestday.end_date))) /
+        (1000 * 3600 * 24);
+    }
+    if (Math.abs(diffDate) > (createRestday.type === 'sick' ? 30 : 60)) {
+      return getConnection()
+        .createQueryBuilder()
+        .insert()
+        .into(Vacations)
+        .values([
+          {
+            start_date: createRestday.start_date,
+            end_date: createRestday.end_date,
+            type: createRestday.type,
+            user: idfrompath,
+          },
+        ])
+        .execute();
+    } else {
+      return 'Bad dates. Try check another dates';
+    }
   }
 
   async updateStatus(changeStatus) {
