@@ -3,11 +3,8 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { Users } from './Users.entity';
 
 export type VacationType = 'vacation' | 'sick';
-export type StatusVacationType =
-  | 'approved'
-  | 'pending'
-  | 'declined'
-  | 'changed';
+// eslint-disable-next-line prettier/prettier
+export type StatusVacationType = 'approved' | 'pending' | 'declined' | 'changed';
 
 @Entity('vacations')
 export class Vacations {
