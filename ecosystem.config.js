@@ -14,7 +14,7 @@ module.exports = {
         DB_PASSWORD: 'nIaK6eUTJz',
         DB_PORT: 3306,
         PRIVATE_KEY: 'secret_key_aleksey',
-        originPort: 'https://perfect-holidays.netlify.app',
+        originPort: 'http://localhost:3000',
         MAIL_HOST: 'gmail',
         MAIL_USER: 'dev.holovashchenko@gmail.com',
         MAIL_PASSWORD: 'full-stack',
