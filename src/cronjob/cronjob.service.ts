@@ -17,6 +17,7 @@ export class CronjobService {
         available_vacation: () =>
           `available_vacation + ${NewYearUpdatesDays.QUANTITY_AVAILABLE_VACATION}`,
         available_sick_days: NewYearUpdatesDays.QUANTITY_AVAILABLE_SICK_DAYS,
+        available_unpaid_days: NewYearUpdatesDays.QUANTITY_AVAILABLE_UNPAID_DAYS,
       })
       .execute();
   }
