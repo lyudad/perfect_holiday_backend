@@ -49,13 +49,17 @@ export class CasualService {
         WHERE status != 'approved' AND type = 'vacation' AND userId = '${idfrompath}'`,
       );
     }
-    if (lastDay.map((v) => v.last_date)) {
+    const [isNull] = lastDay.map((v) => v.last_date !== null);
+    if (isNull) {
       diffDate =
         (Number(new Date(lastDay.map((v) => v.last_date))) -
           Number(new Date(createRestday.end_date))) /
         (1000 * 3600 * 24);
     }
-    if (Math.abs(diffDate) > (createRestday.type === 'sick' ? 30 : 60)) {
+    if (
+      Math.abs(diffDate) > (createRestday.type === 'sick' ? 30 : 60) ||
+      (!isNull && diffDate === 0)
+    ) {
       return getConnection()
         .createQueryBuilder()
         .insert()
