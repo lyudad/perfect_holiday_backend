@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { Users } from './Users.entity';
 
-export type VacationType = 'vacation' | 'sick';
+export type VacationType = 'vacation' | 'sick' | 'unpaid';
 export type StatusVacationType =
   | 'approved'
   | 'pending'
@@ -26,7 +26,7 @@ export class Vacations {
   @ApiProperty()
   @Column({
     type: 'enum',
-    enum: ['vacation', 'sick'],
+    enum: ['vacation', 'sick', 'unpaid'],
   })
   type: VacationType;
 

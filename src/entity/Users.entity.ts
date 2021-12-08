@@ -57,7 +57,9 @@ export class Users {
   @ApiProperty()
   @Column({ default: 5 })
   public available_sick_days: number;
-
+  @ApiProperty()
+  @Column({ default: 1000 })
+  public available_unpaid_days: number;
   @OneToMany(() => Vacations, (vacation) => vacation.user)
   public vacations: Vacations[];
 }
