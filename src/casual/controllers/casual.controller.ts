@@ -65,6 +65,13 @@ export class CasualController {
     return this.casualService.updateStatus(changeStatus);
   }
 
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Put('editing')
+  updateRestDays(@Body() updateDays) {
+    return this.casualService.updateRestDays(updateDays);
+  }
+
   @Roles(Role.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
