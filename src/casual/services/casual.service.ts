@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { debug } from 'console';
+import { VacationType } from 'src/constants/constans';
 import { Users } from 'src/entity/Users.entity';
 import { Vacations } from 'src/entity/Vacations.entity';
 import { getConnection, getRepository, Repository } from 'typeorm';
@@ -38,7 +39,7 @@ export class CasualService {
   async createStartAndLastRestDay(createRestday, idfrompath) {
     let lastDay;
     let diffDate = 0;
-    if (createRestday.type === 'sick') {
+    if (createRestday.type === VacationType.SICK) {
       lastDay = await this.casualRepository.query(
         `SELECT MAX(end_date) AS last_date FROM vacations
         WHERE status != 'approved' AND type = 'sick' AND userId = '${idfrompath}'`,
@@ -57,7 +58,8 @@ export class CasualService {
         (1000 * 3600 * 24);
     }
     if (
-      Math.abs(diffDate) > (createRestday.type === 'sick' ? 30 : 60) ||
+      Math.abs(diffDate) >
+        (createRestday.type === VacationType.SICK ? 30 : 60) ||
       (!isNull && diffDate === 0)
     ) {
       return getConnection()

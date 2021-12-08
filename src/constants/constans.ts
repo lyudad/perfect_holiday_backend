@@ -20,3 +20,8 @@ export const NewYearUpdatesDays: TNewYearUpdatesDays = {
     timeZone: 'Europe/Kiev',
   },
 };
+
+export enum VacationType {
+  SICK = 'sick',
+  VACATION = 'vacation',
+}
