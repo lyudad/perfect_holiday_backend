@@ -37,30 +37,62 @@ export class CasualService {
   }
 
   async createStartAndLastRestDay(createRestday, idfrompath) {
-    let lastDay;
-    let diffDate = 0;
+    let allDates;
+    let diffPastDate;
+    let diffFutureDate;
+
     if (createRestday.type === VacationType.SICK) {
-      lastDay = await this.casualRepository.query(
-        `SELECT MAX(end_date) AS last_date FROM vacations
-        WHERE status != 'approved' AND type = 'sick' AND userId = '${idfrompath}'`,
+      allDates = await this.casualRepository.query(
+        `SELECT end_date AS end_date, start_date AS start_date FROM vacations
+    WHERE status != 'approved' AND type = '${VacationType.SICK}' AND userId = '${idfrompath}'`,
       );
     } else {
-      lastDay = await this.casualRepository.query(
-        `SELECT MAX(end_date) AS last_date FROM vacations
-        WHERE status != 'approved' AND type = 'vacation' AND userId = '${idfrompath}'`,
+      allDates = await this.casualRepository.query(
+        `SELECT end_date AS end_date, start_date AS start_date FROM vacations
+    WHERE status != 'approved' AND type = '${VacationType.VACATION}' AND userId = '${idfrompath}'`,
       );
     }
-    const [isNull] = lastDay.map((v) => v.last_date !== null);
-    if (isNull) {
-      diffDate =
-        (Number(new Date(lastDay.map((v) => v.last_date))) -
-          Number(new Date(createRestday.end_date))) /
-        (1000 * 3600 * 24);
+
+    const minFutureDate = allDates
+      .filter(
+        (v) =>
+          Number(new Date(createRestday.end_date)) <
+          Number(new Date(v.start_date)),
+      )
+      .sort()
+      .reverse()
+      .find((v) => Math.min(Number(new Date(v.start_date))))?.start_date;
+
+    const maxPastDate = allDates
+      .filter(
+        (v) =>
+          Number(new Date(createRestday.start_date)) >
+          Number(new Date(v.end_date)),
+      )
+      .sort()
+      .reverse()
+      .find((v) => Math.max(Number(new Date(v.end_date))))?.end_date;
+
+    if (maxPastDate !== undefined) {
+      diffPastDate = Math.abs(
+        (Number(new Date(createRestday.start_date)) - Number(maxPastDate)) /
+          (1000 * 3600 * 24),
+      );
+    }
+    if (minFutureDate !== undefined) {
+      diffFutureDate = Math.abs(
+        (Number(new Date(createRestday.end_date)) - Number(minFutureDate)) /
+          (1000 * 3600 * 24),
+      );
     }
     if (
-      Math.abs(diffDate) >
-        (createRestday.type === VacationType.SICK ? 30 : 60) ||
-      (!isNull && diffDate === 0)
+      (diffPastDate > (createRestday.type === VacationType.SICK ? 30 : 60) &&
+        diffFutureDate >
+          (createRestday.type === VacationType.SICK ? 30 : 60)) ||
+      (diffFutureDate > (createRestday.type === VacationType.SICK ? 30 : 60) &&
+        !diffPastDate) ||
+      (diffPastDate > (createRestday.type === VacationType.SICK ? 30 : 60) &&
+        !diffFutureDate)
     ) {
       return getConnection()
         .createQueryBuilder()
@@ -76,7 +108,15 @@ export class CasualService {
         ])
         .execute();
     } else {
-      return 'Bad dates. Try check another dates';
+      return `Bad dates. Try check another dates. Previos vacation was ${Math.ceil(
+        diffPastDate,
+      )} days ago ${
+        !isNaN(diffFutureDate)
+          ? 'and you next vacation will be about ' +
+            Math.ceil(diffFutureDate) +
+            ' days'
+          : ''
+      } `;
     }
   }
 
