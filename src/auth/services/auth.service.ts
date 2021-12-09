@@ -33,12 +33,18 @@ export class AuthService {
       email: user.email,
       sub: user.id,
       role: user.role,
+      name: user.first_name,
+      sickDays: user.available_sick_days,
+      vacationDays: user.available_vacation,
     };
 
     return {
       access_token: this.jwtService.sign(payload),
       role: user.role,
       id: user.id,
+      name: user.first_name,
+      sickDays: user.available_sick_days,
+      vacationDays: user.available_vacation,
     };
   }
 }
