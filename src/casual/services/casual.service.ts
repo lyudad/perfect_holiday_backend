@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { debug } from 'console';
+import { VacationType } from 'src/constants/constans';
 import { Users } from 'src/entity/Users.entity';
 import { Vacations } from 'src/entity/Vacations.entity';
 import { getConnection, getRepository, Repository } from 'typeorm';
@@ -35,19 +37,87 @@ export class CasualService {
   }
 
   async createStartAndLastRestDay(createRestday, idfrompath) {
-    return getConnection()
-      .createQueryBuilder()
-      .insert()
-      .into(Vacations)
-      .values([
-        {
-          start_date: createRestday.start_date,
-          end_date: createRestday.end_date,
-          type: createRestday.type,
-          user: idfrompath,
-        },
-      ])
-      .execute();
+    let allDates;
+    let diffPastDate;
+    let diffFutureDate;
+
+    if (createRestday.type === VacationType.SICK) {
+      allDates = await this.casualRepository.query(
+        `SELECT end_date AS end_date, start_date AS start_date FROM vacations
+    WHERE status != 'approved' AND type = '${VacationType.SICK}' AND userId = '${idfrompath}'`,
+      );
+    } else {
+      allDates = await this.casualRepository.query(
+        `SELECT end_date AS end_date, start_date AS start_date FROM vacations
+    WHERE status != 'approved' AND type = '${VacationType.VACATION}' AND userId = '${idfrompath}'`,
+      );
+    }
+
+    const minFutureDate = allDates
+      .filter(
+        (v) =>
+          Number(new Date(createRestday.end_date)) <
+          Number(new Date(v.start_date)),
+      )
+      .sort()
+      .reverse()
+      .find((v) => Math.min(Number(new Date(v.start_date))))?.start_date;
+
+    const maxPastDate = allDates
+      .filter(
+        (v) =>
+          Number(new Date(createRestday.start_date)) >
+          Number(new Date(v.end_date)),
+      )
+      .sort()
+      .reverse()
+      .find((v) => Math.max(Number(new Date(v.end_date))))?.end_date;
+
+    if (maxPastDate !== undefined) {
+      diffPastDate = Math.abs(
+        (Number(new Date(createRestday.start_date)) - Number(maxPastDate)) /
+          (1000 * 3600 * 24),
+      );
+    }
+    if (minFutureDate !== undefined) {
+      diffFutureDate = Math.abs(
+        (Number(new Date(createRestday.end_date)) - Number(minFutureDate)) /
+          (1000 * 3600 * 24),
+      );
+    }
+    if (
+      (diffPastDate > (createRestday.type === VacationType.SICK ? 30 : 60) &&
+        diffFutureDate >
+          (createRestday.type === VacationType.SICK ? 30 : 60)) ||
+      (diffFutureDate > (createRestday.type === VacationType.SICK ? 30 : 60) &&
+        !diffPastDate) ||
+      (diffPastDate > (createRestday.type === VacationType.SICK ? 30 : 60) &&
+        !diffFutureDate)
+    ) {
+      return getConnection()
+        .createQueryBuilder()
+        .insert()
+        .into(Vacations)
+        .values([
+          {
+            start_date: createRestday.start_date,
+            end_date: createRestday.end_date,
+            type: createRestday.type,
+            user: idfrompath,
+          },
+        ])
+        .execute();
+    } else {
+      return `Bad dates. Try check another dates. Previos vacation was ${Math.ceil(
+        diffPastDate,
+      )} days ago ${
+        !isNaN(diffFutureDate)
+          ? 'and you next vacation will be about ' +
+            Math.ceil(diffFutureDate) +
+            ' days'
+          : ''
+      } `;
+    }
   }
 
   async updateStatus(changeStatus) {
