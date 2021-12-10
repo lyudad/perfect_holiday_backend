@@ -36,7 +36,7 @@ export class CasualController {
     return this.casualService.findAllNotApprovedRestDays();
   }
 
-  @Roles(Role.Employee)
+  @Roles(Role.Employee, Role.Admin, Role.SuperAdmin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get(':id')
   findAllRestDays(@Param('id') id: string) {
