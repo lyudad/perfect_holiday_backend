@@ -59,7 +59,7 @@ export class Users {
   public available_sick_days: number;
   @ApiProperty()
   @Column({ default: 1000 })
-  public available_unpaid_days: number;
+  public available_unpaid_days?: number;
   @OneToMany(() => Vacations, (vacation) => vacation.user)
   public vacations: Vacations[];
 }
