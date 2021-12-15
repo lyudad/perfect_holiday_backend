@@ -58,7 +58,7 @@ export class CasualController {
     );
   }
 
-  @Roles(Role.Admin)
+  @Roles(Role.Admin, Role.SuperAdmin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Put()
   updateStatus(@Body() changeStatus) {
