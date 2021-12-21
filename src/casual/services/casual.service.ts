@@ -140,7 +140,7 @@ export class CasualService {
         .andWhere(`users.available_vacation >=:diff`,{diff:changeStatus.diffDays})
         .execute();
     }
-    else
+    else if(changeStatus.type==='sick')
     {
       return getConnection()
         .createQueryBuilder()
@@ -159,23 +159,83 @@ export class CasualService {
         .andWhere(`users.available_sick_days >=:diff`,{diff:changeStatus.diffDays})
         .execute();
     }
+    else
+    {
+      return getConnection()
+        .createQueryBuilder()
+        .update('vacations')
+        .set({ status: changeStatus.status })
+        .where('vacations.id = :id', { id: changeStatus.id })
+        .andWhere('vacations.userId=:userId', {
+          userId: changeStatus.userId,
+        })
+        .execute();
+    }
 
   }
 
   async updateRestDays(updateDays) {
-    return getConnection()
-      .createQueryBuilder()
-      .update('vacations')
-      .set({
-        status: updateDays.status,
-        start_date: updateDays.start_date,
-        end_date: updateDays.end_date,
-      })
-      .where('vacations.id = :id', { id: updateDays.id })
-      .andWhere('vacations.userId=:userId', {
-        userId: updateDays.userId,
-      })
-      .execute();
+    if(updateDays.type==='vacation') {
+      return getConnection()
+        .createQueryBuilder()
+        .update('vacations')
+        .set({
+          status: updateDays.status,
+          start_date: updateDays.start_date,
+          end_date: updateDays.end_date,
+        })
+        .where('vacations.id = :id', { id: updateDays.id })
+        .andWhere('vacations.userId=:userId', {
+          userId: updateDays.userId,
+        }).update('users')
+        .set({
+          available_sick_days:()=> `available_vacation- ${updateDays.diffDays}`
+        })
+        .where(`users.id =:userId`,{
+          userId: updateDays.userId,
+        })
+        .andWhere(`users.available_vacation >=:diff`,{diff:updateDays.diffDays})
+        .execute();
+    }
+    else if(updateDays.type==='sick')
+    {
+      return getConnection()
+        .createQueryBuilder()
+        .update('vacations')
+        .set({
+          status: updateDays.status,
+          start_date: updateDays.start_date,
+          end_date: updateDays.end_date,
+        })
+        .where('vacations.id = :id', { id: updateDays.id })
+        .andWhere('vacations.userId=:userId', {
+          userId: updateDays.userId,
+        }).update('users')
+        .set({
+          available_sick_days:()=> `available_sick_days- ${updateDays.diffDays}`
+        })
+        .where(`users.id =:userId`,{
+          userId: updateDays.userId,
+        })
+        .andWhere(`users.available_sick_days >=:diff`,{diff:updateDays.diffDays})
+        .execute();
+    }
+    else
+    {
+      return getConnection()
+        .createQueryBuilder()
+        .update('vacations')
+        .set({
+          status: updateDays.status,
+          start_date: updateDays.start_date,
+          end_date: updateDays.end_date,
+        })
+        .where('vacations.id = :id', { id: updateDays.id })
+        .andWhere('vacations.userId=:userId', {
+          userId: updateDays.userId,
+        })
+        .execute();
+    }
   }
 
   async deleteRestDay(deleteRest, idfrompath) {
