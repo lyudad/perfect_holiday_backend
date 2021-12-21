@@ -189,7 +189,7 @@ export class CasualService {
           userId: updateDays.userId,
         }).update('users')
         .set({
-          available_sick_days:()=> `available_vacation- ${updateDays.diffDays}`
+          available_vacation:()=> `available_vacation- ${updateDays.diffDays}`
         })
         .where(`users.id =:userId`,{
           userId: updateDays.userId,
