@@ -121,15 +121,45 @@ export class CasualService {
   }
 
   async updateStatus(changeStatus) {
-    return getConnection()
-      .createQueryBuilder()
-      .update('vacations')
-      .set({ status: changeStatus.status })
-      .where('vacations.id = :id', { id: changeStatus.id })
-      .andWhere('vacations.userId=:userId', {
-        userId: changeStatus.userId,
-      })
-      .execute();
+    if(changeStatus.type==='vacation')
+    {
+      return getConnection()
+        .createQueryBuilder()
+        .update('vacations')
+        .set({ status: changeStatus.status })
+        .where('vacations.id = :id', { id: changeStatus.id })
+        .andWhere('vacations.userId=:userId', {
+          userId: changeStatus.userId,
+        }).update('users')
+        .set({
+          available_vacation:()=> `available_vacation-${changeStatus.diffDays}`,
+        })
+        .where(`users.id =:userId`,{
+          userId: changeStatus.userId,
+        })
+        .andWhere(`users.available_vacation >=:diff`,{diff:changeStatus.diffDays})
+        .execute();
+    }
+    else
+    {
+      return getConnection()
+        .createQueryBuilder()
+        .update('vacations')
+        .set({ status: changeStatus.status })
+        .where('vacations.id = :id', { id: changeStatus.id })
+        .andWhere('vacations.userId=:userId', {
+          userId: changeStatus.userId,
+        }).update('users')
+        .set({
+          available_sick_days:()=> `available_sick_days- ${changeStatus.diffDays}`
+        })
+        .where(`users.id =:userId`,{
+          userId: changeStatus.userId,
+        })
+        .andWhere(`users.available_sick_days >=:diff`,{diff:changeStatus.diffDays})
+        .execute();
+    }
+
   }
 
   async updateRestDays(updateDays) {
