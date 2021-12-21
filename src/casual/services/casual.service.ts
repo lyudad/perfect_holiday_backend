@@ -123,14 +123,17 @@ export class CasualService {
   async updateStatus(changeStatus) {
     if(changeStatus.type==='vacation')
     {
-      return getConnection()
+      const vacation = getConnection()
         .createQueryBuilder()
         .update('vacations')
         .set({ status: changeStatus.status })
         .where('vacations.id = :id', { id: changeStatus.id })
         .andWhere('vacations.userId=:userId', {
           userId: changeStatus.userId,
-        }).update('users')
+        })
+      const days = getConnection()
+        .createQueryBuilder()
+        .update('users')
         .set({
           available_vacation:()=> `available_vacation-${changeStatus.diffDays}`,
         })
@@ -138,26 +141,31 @@ export class CasualService {
           userId: changeStatus.userId,
         })
         .andWhere(`users.available_vacation >=:diff`,{diff:changeStatus.diffDays})
-        .execute();
+
+      return await Promise.all([vacation.execute(), days.execute()])
+
     }
     else if(changeStatus.type==='sick')
     {
-      return getConnection()
+      const vacation = getConnection()
         .createQueryBuilder()
         .update('vacations')
         .set({ status: changeStatus.status })
         .where('vacations.id = :id', { id: changeStatus.id })
         .andWhere('vacations.userId=:userId', {
           userId: changeStatus.userId,
-        }).update('users')
+        })
+      const days = getConnection()
+        .createQueryBuilder()
+        .update('users')
         .set({
-          available_sick_days:()=> `available_sick_days- ${changeStatus.diffDays}`
+          available_sick_days:()=> `available_sick_days-${changeStatus.diffDays}`,
         })
         .where(`users.id =:userId`,{
           userId: changeStatus.userId,
         })
         .andWhere(`users.available_sick_days >=:diff`,{diff:changeStatus.diffDays})
-        .execute();
+      return await Promise.all([vacation.execute(), days.execute()])
     }
     else
     {
@@ -176,7 +184,7 @@ export class CasualService {
 
   async updateRestDays(updateDays) {
     if(updateDays.type==='vacation') {
-      return getConnection()
+      const vacation = getConnection()
         .createQueryBuilder()
         .update('vacations')
         .set({
@@ -187,7 +195,10 @@ export class CasualService {
         .where('vacations.id = :id', { id: updateDays.id })
         .andWhere('vacations.userId=:userId', {
           userId: updateDays.userId,
-        }).update('users')
+        })
+      const days = getConnection()
+        .createQueryBuilder()
+        .update('users')
         .set({
           available_vacation:()=> `available_vacation- ${updateDays.diffDays}`
         })
@@ -195,11 +206,12 @@ export class CasualService {
           userId: updateDays.userId,
         })
         .andWhere(`users.available_vacation >=:diff`,{diff:updateDays.diffDays})
-        .execute();
+
+      return await Promise.all([vacation.execute(), days.execute()])
     }
     else if(updateDays.type==='sick')
     {
-      return getConnection()
+      const vacation = getConnection()
         .createQueryBuilder()
         .update('vacations')
         .set({
@@ -210,7 +222,10 @@ export class CasualService {
         .where('vacations.id = :id', { id: updateDays.id })
         .andWhere('vacations.userId=:userId', {
           userId: updateDays.userId,
-        }).update('users')
+        })
+      const days = getConnection()
+        .createQueryBuilder()
+        .update('users')
         .set({
           available_sick_days:()=> `available_sick_days- ${updateDays.diffDays}`
         })
@@ -218,7 +233,9 @@ export class CasualService {
           userId: updateDays.userId,
         })
         .andWhere(`users.available_sick_days >=:diff`,{diff:updateDays.diffDays})
-        .execute();
+
+      return await Promise.all([vacation.execute(), days.execute()])
+
     }
     else
     {
