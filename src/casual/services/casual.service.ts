@@ -121,16 +121,17 @@ export class CasualService {
   }
 
   async updateStatus(changeStatus) {
+    const vacation = getConnection()
+      .createQueryBuilder()
+      .update('vacations')
+      .set({ status: changeStatus.status })
+      .where('vacations.id = :id', { id: changeStatus.id })
+      .andWhere('vacations.userId=:userId', {
+        userId: changeStatus.userId,
+      })
+
     if(changeStatus.type==='vacation')
     {
-      const vacation = getConnection()
-        .createQueryBuilder()
-        .update('vacations')
-        .set({ status: changeStatus.status })
-        .where('vacations.id = :id', { id: changeStatus.id })
-        .andWhere('vacations.userId=:userId', {
-          userId: changeStatus.userId,
-        })
       const days = getConnection()
         .createQueryBuilder()
         .update('users')
@@ -147,14 +148,6 @@ export class CasualService {
     }
     else if(changeStatus.type==='sick')
     {
-      const vacation = getConnection()
-        .createQueryBuilder()
-        .update('vacations')
-        .set({ status: changeStatus.status })
-        .where('vacations.id = :id', { id: changeStatus.id })
-        .andWhere('vacations.userId=:userId', {
-          userId: changeStatus.userId,
-        })
       const days = getConnection()
         .createQueryBuilder()
         .update('users')
@@ -169,33 +162,26 @@ export class CasualService {
     }
     else
     {
-      return getConnection()
-        .createQueryBuilder()
-        .update('vacations')
-        .set({ status: changeStatus.status })
-        .where('vacations.id = :id', { id: changeStatus.id })
-        .andWhere('vacations.userId=:userId', {
-          userId: changeStatus.userId,
-        })
-        .execute();
+      return vacation.execute()
     }
 
   }
 
   async updateRestDays(updateDays) {
+    const vacation = getConnection()
+      .createQueryBuilder()
+      .update('vacations')
+      .set({
+        status: updateDays.status,
+        start_date: updateDays.start_date,
+        end_date: updateDays.end_date,
+      })
+      .where('vacations.id = :id', { id: updateDays.id })
+      .andWhere('vacations.userId=:userId', {
+        userId: updateDays.userId,
+      })
+
     if(updateDays.type==='vacation') {
-      const vacation = getConnection()
-        .createQueryBuilder()
-        .update('vacations')
-        .set({
-          status: updateDays.status,
-          start_date: updateDays.start_date,
-          end_date: updateDays.end_date,
-        })
-        .where('vacations.id = :id', { id: updateDays.id })
-        .andWhere('vacations.userId=:userId', {
-          userId: updateDays.userId,
-        })
       const days = getConnection()
         .createQueryBuilder()
         .update('users')
@@ -211,18 +197,6 @@ export class CasualService {
     }
     else if(updateDays.type==='sick')
     {
-      const vacation = getConnection()
-        .createQueryBuilder()
-        .update('vacations')
-        .set({
-          status: updateDays.status,
-          start_date: updateDays.start_date,
-          end_date: updateDays.end_date,
-        })
-        .where('vacations.id = :id', { id: updateDays.id })
-        .andWhere('vacations.userId=:userId', {
-          userId: updateDays.userId,
-        })
       const days = getConnection()
         .createQueryBuilder()
         .update('users')
@@ -235,23 +209,10 @@ export class CasualService {
         .andWhere(`users.available_sick_days >=:diff`,{diff:updateDays.diffDays})
 
       return await Promise.all([vacation.execute(), days.execute()])
-
     }
     else
     {
-      return getConnection()
-        .createQueryBuilder()
-        .update('vacations')
-        .set({
-          status: updateDays.status,
-          start_date: updateDays.start_date,
-          end_date: updateDays.end_date,
-        })
-        .where('vacations.id = :id', { id: updateDays.id })
-        .andWhere('vacations.userId=:userId', {
-          userId: updateDays.userId,
-        })
-        .execute();
+      return vacation.execute()
     }
   }
 
