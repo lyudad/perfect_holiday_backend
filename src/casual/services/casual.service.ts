@@ -133,7 +133,7 @@ export class CasualService {
       .createQueryBuilder()
       .update('users')
 
-    if(changeStatus.type==='vacation')
+    if(changeStatus.type===VacationType.VACATION)
     {
       days.set({
           available_vacation:()=> `available_vacation-${changeStatus.diffDays}`,
@@ -146,7 +146,7 @@ export class CasualService {
       return await Promise.all([vacation.execute(), days.execute()])
 
     }
-    else if(changeStatus.type==='sick')
+    else if(changeStatus.type===VacationType.SICK)
     {
       days.set({
           available_sick_days:()=> `available_sick_days-${changeStatus.diffDays}`,
@@ -182,7 +182,7 @@ export class CasualService {
       .createQueryBuilder()
       .update('users')
 
-    if(updateDays.type==='vacation') {
+    if(updateDays.type===VacationType.VACATION) {
           days.set({
           available_vacation:()=> `available_vacation- ${updateDays.diffDays}`
         })
@@ -193,7 +193,7 @@ export class CasualService {
 
       return await Promise.all([vacation.execute(), days.execute()])
     }
-    else if(updateDays.type==='sick')
+    else if(updateDays.type===VacationType.SICK)
     {
         days.set({
           available_sick_days:()=> `available_sick_days- ${updateDays.diffDays}`
