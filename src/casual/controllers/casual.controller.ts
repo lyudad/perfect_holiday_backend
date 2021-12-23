@@ -43,7 +43,7 @@ export class CasualController {
     return this.casualService.findAllRestDays(id);
   }
 
-  @Roles(Role.Employee)
+  @Roles(Role.Employee, Role.Admin, Role.SuperAdmin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post(':id')
   @HttpCode(HttpStatus.CREATED)
