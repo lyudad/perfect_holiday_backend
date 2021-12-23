@@ -119,7 +119,6 @@ export class CasualService {
       } `;
     }
   }
-
   async updateStatus(changeStatus) {
     const vacation = getConnection()
       .createQueryBuilder()
@@ -129,41 +128,29 @@ export class CasualService {
       .andWhere('vacations.userId=:userId', {
         userId: changeStatus.userId,
       })
-    const days = getConnection()
-      .createQueryBuilder()
-      .update('users')
 
-    if(changeStatus.type===VacationType.VACATION)
-    {
-      days.set({
-          available_vacation:()=> `available_vacation-${changeStatus.diffDays}`,
-        })
-        .where(`users.id =:userId`,{
+    if (Object.values(VacationType).includes(changeStatus.type)) {
+      const days = getConnection()
+        .createQueryBuilder()
+        .update('users')
+        .set(changeStatus.type === VacationType.VACATION ?
+          {
+            available_vacation: () => `available_vacation-${changeStatus.diffDays}`,
+          } :
+          {
+            available_sick_days: () => `available_sick_days-${changeStatus.diffDays}`
+          }
+        )
+        .where(`users.id =:userId`, {
           userId: changeStatus.userId,
         })
-        .andWhere(`users.available_vacation >=:diff`,{diff:changeStatus.diffDays})
-
-      return await Promise.all([vacation.execute(), days.execute()])
-
-    }
-    else if(changeStatus.type===VacationType.SICK)
-    {
-      days.set({
-          available_sick_days:()=> `available_sick_days-${changeStatus.diffDays}`,
-        })
-        .where(`users.id =:userId`,{
-          userId: changeStatus.userId,
-        })
-        .andWhere(`users.available_sick_days >=:diff`,{diff:changeStatus.diffDays})
-
       return await Promise.all([vacation.execute(), days.execute()])
     }
-    else
-    {
-      return vacation.execute()
-    }
 
+    return vacation.execute()
   }
+
+
 
   async updateRestDays(updateDays) {
     const vacation = getConnection()
@@ -178,37 +165,24 @@ export class CasualService {
       .andWhere('vacations.userId=:userId', {
         userId: updateDays.userId,
       })
-    const days = getConnection()
-      .createQueryBuilder()
-      .update('users')
-
-    if(updateDays.type===VacationType.VACATION) {
-          days.set({
-          available_vacation:()=> `available_vacation- ${updateDays.diffDays}`
-        })
-        .where(`users.id =:userId`,{
+    if (Object.values(VacationType).includes(updateDays.type)) {
+      const days = getConnection()
+        .createQueryBuilder()
+        .update('users')
+        .set(updateDays.type === VacationType.VACATION ?
+          {
+            available_vacation: () => `available_vacation-${updateDays.diffDays}`,
+          } :
+          {
+            available_sick_days: () => `available_sick_days-${updateDays.diffDays}`
+          }
+        )
+        .where(`users.id =:userId`, {
           userId: updateDays.userId,
         })
-        .andWhere(`users.available_vacation >=:diff`,{diff:updateDays.diffDays})
-
       return await Promise.all([vacation.execute(), days.execute()])
     }
-    else if(updateDays.type===VacationType.SICK)
-    {
-        days.set({
-          available_sick_days:()=> `available_sick_days- ${updateDays.diffDays}`
-        })
-        .where(`users.id =:userId`,{
-          userId: updateDays.userId,
-        })
-        .andWhere(`users.available_sick_days >=:diff`,{diff:updateDays.diffDays})
-
-      return await Promise.all([vacation.execute(), days.execute()])
-    }
-    else
-    {
-      return vacation.execute()
-    }
+    return vacation.execute()
   }
 
   async deleteRestDay(deleteRest, idfrompath) {
