@@ -72,7 +72,7 @@ export class CasualController {
     return this.casualService.updateRestDays(updateDays);
   }
 
-  @Roles(Role.Admin)
+  @Roles(Role.Admin, Role.Employee)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':id')
   deleteRestDay(@Body() deleteRest, @Param('id') idfrompath: string) {
