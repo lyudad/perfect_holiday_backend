@@ -119,9 +119,8 @@ export class CasualService {
       } `;
     }
   }
-
   async updateStatus(changeStatus) {
-    return getConnection()
+    const vacation = getConnection()
       .createQueryBuilder()
       .update('vacations')
       .set({ status: changeStatus.status })
@@ -129,11 +128,32 @@ export class CasualService {
       .andWhere('vacations.userId=:userId', {
         userId: changeStatus.userId,
       })
-      .execute();
+
+    if (Object.values(VacationType).includes(changeStatus.type)) {
+      const days = getConnection()
+        .createQueryBuilder()
+        .update('users')
+        .set(changeStatus.type === VacationType.VACATION ?
+          {
+            available_vacation: () => `available_vacation-${changeStatus.diffDays}`,
+          } :
+          {
+            available_sick_days: () => `available_sick_days-${changeStatus.diffDays}`
+          }
+        )
+        .where(`users.id =:userId`, {
+          userId: changeStatus.userId,
+        })
+      return await Promise.all([vacation.execute(), days.execute()])
+    }
+
+    return vacation.execute()
   }
 
+
+
   async updateRestDays(updateDays) {
-    return getConnection()
+    const vacation = getConnection()
       .createQueryBuilder()
       .update('vacations')
       .set({
@@ -145,7 +165,24 @@ export class CasualService {
       .andWhere('vacations.userId=:userId', {
         userId: updateDays.userId,
       })
-      .execute();
+    if (Object.values(VacationType).includes(updateDays.type)) {
+      const days = getConnection()
+        .createQueryBuilder()
+        .update('users')
+        .set(updateDays.type === VacationType.VACATION ?
+          {
+            available_vacation: () => `available_vacation-${updateDays.diffDays}`,
+          } :
+          {
+            available_sick_days: () => `available_sick_days-${updateDays.diffDays}`
+          }
+        )
+        .where(`users.id =:userId`, {
+          userId: updateDays.userId,
+        })
+      return await Promise.all([vacation.execute(), days.execute()])
+    }
+    return vacation.execute()
   }
 
   async deleteRestDay(deleteRest, idfrompath) {
